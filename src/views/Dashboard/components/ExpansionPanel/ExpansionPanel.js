@@ -117,108 +117,108 @@ class DetailedExpansionPanel extends Component {
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
                     <Grid container>
-                    <Grid item lg={3} sm={6} md={6}>
-                    <div className={classes.column}>
-                        <Typography>Submission Date:</Typography>
-                        <div>
-                            <Chip id="hour" label="Last hour" className={classes.chip} onClick={() => this.handleDateClick('hour')} />
-                        </div>
-                        <div>
-                            <Chip id="day" label="Today" className={classes.chip} onClick={() => this.handleDateClick('day')} />
-                        </div>
-                        <div>
-                            <Chip id="week" label="This week" className={classes.chip} onClick={() => this.handleDateClick('week')} />
-                        </div>
-                    </div>
-                    </Grid>
-                    <Grid item lg={3} sm={6} md={6}>
-                    <div className={classes.column}>
-                        <Typography>Sort By:</Typography>
-                        <div>
-                            <Chip label="Timestamp" className={classes.chip} />
-                        </div>
-                        <div>
-                            <Chip label="Machine ID" className={classes.chip} />
-                        </div>
-                    </div>
-                    </Grid>
-                    <Grid item lg={3} sm={12} md={12}>
-                    <div className={classes.column}>
-                        <Typography>By User:</Typography>
-                        <FormControl variant="outlined" className={classes.formControl}>
-                            <InputLabel id="demo-simple-select-outlined-label">User</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-outlined-label"
-                                id="demo-simple-select-outlined"
-                                //value={age}
-                                //onChange={handleChange}
-                                label="Age">
-                                <MenuItem value=""><em>Show all</em></MenuItem>
-                                <MenuItem value={10}>Alex</MenuItem>
-                                <MenuItem value={20}>Alexander</MenuItem>
-                                <MenuItem value={30}>Joe</MenuItem>
-                                <MenuItem value={40}>Patrick</MenuItem>
-                            </Select>
-                        </FormControl>
-                    </div>
-                    </Grid>
-                    <Grid item lg={3} sm={12}>
-                    <div className={classes.column}>
-                        <Typography>
-                            Select a custom date range:
-                            <br />
-                            <ThemeProvider theme={themeText}>
-                            <div className={classes.timePickers}>
-                                <MuiThemeProvider >
-                                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                        <DateTimePicker
-                                            label="From:"
-                                            inputVariant="outlined"
-                                            onChange={this.handleStartDateChange}
-                                            value={localStartDate}
-                                            />
-                                    </MuiPickersUtilsProvider>
-                                </MuiThemeProvider>
+                        <Grid item lg={3} sm={6} md={6}>
+                            <div className={classes.column}>
+                                <Typography>Submission Date:</Typography>
+                                <div>
+                                    <Chip id="hour" label="Last hour" className={classes.chip} onClick={() => this.handleDateClick('hour')} />
+                                </div>
+                                <div>
+                                    <Chip id="day" label="Today" className={classes.chip} onClick={() => this.handleDateClick('day')} />
+                                </div>
+                                <div>
+                                    <Chip id="week" label="This week" className={classes.chip} onClick={() => this.handleDateClick('week')} />
+                                </div>
                             </div>
-                            <div className={classes.timePickers}>
-                                <MuiThemeProvider >
-                                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                        <DateTimePicker
-                                            label="To:"
-                                            inputVariant="outlined"
-                                            onChange={this.handleEndDateChange}
-                                            value={localEndDate}
-                                            />
-                                    </MuiPickersUtilsProvider>
-                                </MuiThemeProvider>
+                        </Grid>
+                        <Grid item lg={3} sm={6} md={6}>
+                            <div className={classes.column}>
+                                <Typography>Sort By:</Typography>
+                                <div>
+                                    <Chip label="Timestamp" className={classes.chip} />
+                                </div>
+                                <div>
+                                    <Chip label="Machine ID" className={classes.chip} />
+                                </div>
                             </div>
-                            </ThemeProvider>
-                            <Button onClick={this.handleDateRangeSearch}>Search</Button>
-                        </Typography>
-                    </div>
-                    </Grid>
-                    {/*<div className={classes.column}>
-                    </div>*/}
-                    {/*<Grid item lg={2.4}>
-                    <div className={classes.column}>
-                        <Typography>Admin Mode</Typography>
-                        <FormControl variant="outlined" className={classes.formControl}>
-                            <InputLabel id="demo-simple-select-outlined-label">Casino</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-outlined-label"
-                                id="demo-simple-select-outlined"
-                                //value={age}
-                                //onChange={handleChange}
-                                label="Age">
-                                <MenuItem value=""><em>Show all</em></MenuItem>
-                                <MenuItem value={10}>Bellagio</MenuItem>
-                                <MenuItem value={20}>Caesar's Palace</MenuItem>
-                                <MenuItem value={30}>Wynn</MenuItem>
-                                <MenuItem value={40}>Mandalay Bay</MenuItem>
-                            </Select>
-                        </FormControl>
-                    </div>
-                    </Grid>*/}
+                        </Grid>
+                        <Grid item lg={3} sm={12} md={12}>
+                            <div className={classes.column}>
+                                <Typography>By User:</Typography>
+                                <FormControl variant="outlined" className={classes.formControl}>
+                                    <InputLabel id="demo-simple-select-outlined-label">User</InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-outlined-label"
+                                        id="demo-simple-select-outlined"
+                                        //value={age}
+                                        //onChange={handleChange}
+                                        label="Age">
+                                        <MenuItem value=""><em>Show all</em></MenuItem>
+                                        <MenuItem value={10}>Alex</MenuItem>
+                                        <MenuItem value={20}>Alexander</MenuItem>
+                                        <MenuItem value={30}>Joe</MenuItem>
+                                        <MenuItem value={40}>Patrick</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </div>
+                        </Grid>
+                        <Grid item lg={3} sm={12}>
+                            <div className={classes.column}>
+                                <Typography>
+                                    Select a custom date range:
+                                    <br />
+                                    <ThemeProvider theme={themeText}>
+                                    <div className={classes.timePickers}>
+                                        <MuiThemeProvider >
+                                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                <DateTimePicker
+                                                    label="From:"
+                                                    inputVariant="outlined"
+                                                    onChange={this.handleStartDateChange}
+                                                    value={localStartDate}
+                                                    />
+                                            </MuiPickersUtilsProvider>
+                                        </MuiThemeProvider>
+                                    </div>
+                                    <div className={classes.timePickers}>
+                                        <MuiThemeProvider >
+                                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                <DateTimePicker
+                                                    label="To:"
+                                                    inputVariant="outlined"
+                                                    onChange={this.handleEndDateChange}
+                                                    value={localEndDate}
+                                                    />
+                                            </MuiPickersUtilsProvider>
+                                        </MuiThemeProvider>
+                                    </div>
+                                    </ThemeProvider>
+                                    <Button onClick={this.handleDateRangeSearch}>Search</Button>
+                                </Typography>
+                            </div>
+                        </Grid>
+                        {/*<div className={classes.column}>
+                        </div>*/}
+                        {/*<Grid item lg={2.4}>
+                        <div className={classes.column}>
+                            <Typography>Admin Mode</Typography>
+                            <FormControl variant="outlined" className={classes.formControl}>
+                                <InputLabel id="demo-simple-select-outlined-label">Casino</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-outlined-label"
+                                    id="demo-simple-select-outlined"
+                                    //value={age}
+                                    //onChange={handleChange}
+                                    label="Age">
+                                    <MenuItem value=""><em>Show all</em></MenuItem>
+                                    <MenuItem value={10}>Bellagio</MenuItem>
+                                    <MenuItem value={20}>Caesar's Palace</MenuItem>
+                                    <MenuItem value={30}>Wynn</MenuItem>
+                                    <MenuItem value={40}>Mandalay Bay</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </div>
+                        </Grid>*/}
                     </Grid>
                 </ExpansionPanelDetails>
                 {/*<Divider />

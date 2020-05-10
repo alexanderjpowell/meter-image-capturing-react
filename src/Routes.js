@@ -13,7 +13,8 @@ import {
   Settings as SettingsView,
   //SignUp as SignUpView,
   SignIn as SignInView,
-  NotFound as NotFoundView
+  NotFound as NotFoundView,
+  FileUpload as FileUploadView,
 } from './views';
 
 //const Routes = () => {
@@ -40,6 +41,12 @@ function Routes(props) {
         exact
         layout={MainLayout}
         path="/users"
+      />
+      <RouteWithLayout
+        component={FileUploadView}
+        exact
+        layout={MainLayout}
+        path="/upload"
       />
       {/*<RouteWithLayout
         component={ProductListView}
