@@ -22,20 +22,23 @@ const Settings = (props) => {
     <div className={classes.root}>
       <Grid
         container
-        spacing={4}
-      >
+        spacing={4}>
         <Grid
           item
-          md={7}
           xs={12}
-        >
+          //md={7}
+          lg={7}
+          xl={7}
+          >
           <Notifications />
         </Grid>
         <Grid
           item
-          md={5}
           xs={12}
-        >
+          //md={5}
+          lg={5}
+          xl={5}
+          >
           <Password />
         </Grid>
       </Grid>

@@ -12,7 +12,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import { MuiThemeProvider, Button } from "@material-ui/core";
+import { MuiThemeProvider, Button, Grid } from "@material-ui/core";
 import DateFnsUtils from '@date-io/date-fns';
 import { DateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
@@ -116,6 +116,8 @@ class DetailedExpansionPanel extends Component {
                     
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
+                    <Grid container>
+                    <Grid item lg={3} sm={6} md={6}>
                     <div className={classes.column}>
                         <Typography>Submission Date:</Typography>
                         <div>
@@ -128,6 +130,8 @@ class DetailedExpansionPanel extends Component {
                             <Chip id="week" label="This week" className={classes.chip} onClick={() => this.handleDateClick('week')} />
                         </div>
                     </div>
+                    </Grid>
+                    <Grid item lg={3} sm={6} md={6}>
                     <div className={classes.column}>
                         <Typography>Sort By:</Typography>
                         <div>
@@ -137,6 +141,8 @@ class DetailedExpansionPanel extends Component {
                             <Chip label="Machine ID" className={classes.chip} />
                         </div>
                     </div>
+                    </Grid>
+                    <Grid item lg={3} sm={12} md={12}>
                     <div className={classes.column}>
                         <Typography>By User:</Typography>
                         <FormControl variant="outlined" className={classes.formControl}>
@@ -155,6 +161,8 @@ class DetailedExpansionPanel extends Component {
                             </Select>
                         </FormControl>
                     </div>
+                    </Grid>
+                    <Grid item lg={3} sm={12}>
                     <div className={classes.column}>
                         <Typography>
                             Select a custom date range:
@@ -188,8 +196,10 @@ class DetailedExpansionPanel extends Component {
                             <Button onClick={this.handleDateRangeSearch}>Search</Button>
                         </Typography>
                     </div>
-                    <div className={classes.column}>
-                    </div>
+                    </Grid>
+                    {/*<div className={classes.column}>
+                    </div>*/}
+                    {/*<Grid item lg={2.4}>
                     <div className={classes.column}>
                         <Typography>Admin Mode</Typography>
                         <FormControl variant="outlined" className={classes.formControl}>
@@ -208,6 +218,8 @@ class DetailedExpansionPanel extends Component {
                             </Select>
                         </FormControl>
                     </div>
+                    </Grid>*/}
+                    </Grid>
                 </ExpansionPanelDetails>
                 {/*<Divider />
                 <ExpansionPanelActions>

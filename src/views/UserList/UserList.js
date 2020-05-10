@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/styles';
-import firebase from '../../firebase/firebase';
 import { UsersToolbar, UsersTable } from './components';
 import mockData from './data';
+import firebase from '../../firebase/firebase';
 
 const useStyles = makeStyles(theme => ({
   root: {
