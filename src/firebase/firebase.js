@@ -77,7 +77,7 @@ class Firebase {
         let scansRef = this.db.collection('users').doc(this.auth.currentUser.uid).collection('scans')
             .where('timestamp', '>', range).orderBy('timestamp', 'desc').limit(50);
         let querySnapshot = await scansRef.get();
-        let ret = []
+        let ret = [];
         querySnapshot.forEach(function(doc) {
             ret.push(doc);
         });
@@ -89,7 +89,7 @@ class Firebase {
         let scansRef = this.db.collection('users').doc(this.auth.currentUser.uid).collection('scans')
             .where('timestamp', '>', range).orderBy('timestamp', 'desc').limit(50);
         let querySnapshot = await scansRef.get();
-        let ret = []
+        let ret = [];
         querySnapshot.forEach(function(doc) {
             ret.push(doc);
         });
@@ -101,7 +101,7 @@ class Firebase {
         let scansRef = this.db.collection('users').doc(this.auth.currentUser.uid).collection('scans')
             .where('timestamp', '>', range).orderBy('timestamp', 'desc').limit(50);
         let querySnapshot = await scansRef.get();
-        let ret = []
+        let ret = [];
         querySnapshot.forEach(function(doc) {
             ret.push(doc);
         });
@@ -109,14 +109,18 @@ class Firebase {
     }
 
     async queryMostRecentScans() {
-        let scansRef = this.db.collection('users').doc(this.auth.currentUser.uid).collection('scans')
-            .orderBy('timestamp', 'desc').limit(10);
-        let querySnapshot = await scansRef.get();
-        let ret = []
-        querySnapshot.forEach(function(doc) {
-            ret.push(doc);
-        });
-        return ret;
+        let ret = [];
+        try {
+            let scansRef = this.db.collection('users').doc(this.auth.currentUser.uid).collection('scans')
+                .orderBy('timestamp', 'desc').limit(10);
+            let querySnapshot = await scansRef.get();
+            querySnapshot.forEach(function(doc) {
+                ret.push(doc);
+            });
+            return ret;
+        } catch (error) {
+            return ret;
+        }
     }
 
     deleteScan(docId) {

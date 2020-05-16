@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
 import Snackbar from '@material-ui/core/Snackbar';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
@@ -8,7 +9,12 @@ import firebase from '../../../../firebase/firebase';
 class MaterialTableDemo extends Component {
 
   constructor(props) {
+    //alert('constructor');
     super(props);
+    if (!firebase.getCurrentUser()) {
+      props.history.replace('/signin');
+    }
+    //alert(firebase.getCurrentUser().email);
     this.handleClose = this.handleClose.bind(this);
     this.state = {
       columns: [
@@ -115,6 +121,7 @@ class MaterialTableDemo extends Component {
 
   // On mount, fetch 50 most recent scans regardless of date
   async componentDidMount() {
+    //alert('componentDidMount');
     let scans = await firebase.queryMostRecentScans();
     let rowData = [];
     for (let i = 0; i < scans.length; i++) {
@@ -248,4 +255,4 @@ class MaterialTableDemo extends Component {
   }
 }
 
-export default MaterialTableDemo;
+export default withRouter(MaterialTableDemo);
