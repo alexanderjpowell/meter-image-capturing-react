@@ -16,6 +16,9 @@ import {
 } from './components';
 import firebase from '../../firebase/firebase';
 
+import { DataGrid } from 'tubular-react';
+import { createColumn } from "tubular-common";
+
 const styles = theme => ({
   root: {
     padding: theme.spacing(2)
@@ -77,7 +80,7 @@ class Dashboard extends Component {
           <MaterialTableDemo
             startDate={startDate}
             endDate={endDate}
-            latestScansRange={latestScansRange} />
+          latestScansRange={latestScansRange} />
         </Grid>
       </Grid>
     </div>
