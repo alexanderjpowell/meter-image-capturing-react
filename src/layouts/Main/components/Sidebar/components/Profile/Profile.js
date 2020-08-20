@@ -43,7 +43,7 @@ const Profile = props => {
   }
 
   if (!photo) {
-    photo = 'https://cdn.audleytravel.com/3078/2198/79/1021591-thai-beach.jpg';
+    photo = 'https://i1.wp.com/mainstsolar.com/wp-content/uploads/2016/08/avatar-placeholder-generic.png?fit=300%2C300';
   }
 
   const user = {

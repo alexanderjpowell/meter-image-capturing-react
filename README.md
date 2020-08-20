@@ -8,6 +8,11 @@
 
 - Views are on: `localhost:3000`
 
+# Deployment Instructions
+
+- Create production build: `npm run build`
+- Deploy to Firebase hosting: `firebase deploy`
+
 # Screenshots
 
 ![alt text](https://github.com/alexanderjpowell/meter-image-capturing-react/blob/master/screenshots/1.png)
