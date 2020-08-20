@@ -148,40 +148,40 @@ class Firebase {
 
     updateScan(oldData, newData) {
         let updates = {};
-        if (oldData['machineId'] != newData['machineId']) {
+        if (oldData['machineId'] !== newData['machineId']) {
             updates['machineId'] = newData['machineId'];
         }
-        if (oldData['progressive1'] != newData['progressive1']) {
+        if (oldData['progressive1'] !== newData['progressive1']) {
             updates['progressive1'] = newData['progressive1'];
         }
-        if (oldData['progressive2'] != newData['progressive2']) {
+        if (oldData['progressive2'] !== newData['progressive2']) {
             updates['progressive2'] = newData['progressive2'];
         }
-        if (oldData['progressive3'] != newData['progressive3']) {
+        if (oldData['progressive3'] !== newData['progressive3']) {
             updates['progressive3'] = newData['progressive3'];
         }
-        if (oldData['progressive4'] != newData['progressive4']) {
+        if (oldData['progressive4'] !== newData['progressive4']) {
             updates['progressive4'] = newData['progressive4'];
         }
-        if (oldData['progressive5'] != newData['progressive5']) {
+        if (oldData['progressive5'] !== newData['progressive5']) {
             updates['progressive5'] = newData['progressive5'];
         }
-        if (oldData['progressive6'] != newData['progressive6']) {
+        if (oldData['progressive6'] !== newData['progressive6']) {
             updates['progressive6'] = newData['progressive6'];
         }
-        if (oldData['progressive7'] != newData['progressive7']) {
+        if (oldData['progressive7'] !== newData['progressive7']) {
             updates['progressive7'] = newData['progressive7'];
         }
-        if (oldData['progressive8'] != newData['progressive8']) {
+        if (oldData['progressive8'] !== newData['progressive8']) {
             updates['progressive8'] = newData['progressive8'];
         }
-        if (oldData['progressive9'] != newData['progressive9']) {
+        if (oldData['progressive9'] !== newData['progressive9']) {
             updates['progressive9'] = newData['progressive9'];
         }
-        if (oldData['progressive10'] != newData['progressive10']) {
+        if (oldData['progressive10'] !== newData['progressive10']) {
             updates['progressive10'] = newData['progressive10'];
         }
-        if (oldData['location'] != newData['location']) {
+        if (oldData['location'] !== newData['location']) {
             updates['location'] = newData['location'];
         }
 

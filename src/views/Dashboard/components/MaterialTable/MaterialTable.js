@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import Snackbar from '@material-ui/core/Snackbar';
-import PropTypes from 'prop-types';
+//import PropTypes from 'prop-types';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import MaterialTable from 'material-table';
-import TextField from '@material-ui/core/TextField';
-import MenuItem from '@material-ui/core/MenuItem';
-import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
-import InputAdornment from '@material-ui/core/InputAdornment';
+//import TextField from '@material-ui/core/TextField';
+//import MenuItem from '@material-ui/core/MenuItem';
+//import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
+//import InputAdornment from '@material-ui/core/InputAdornment';
 import firebase from '../../../../firebase/firebase';
 
 class MaterialTableDemo extends Component {

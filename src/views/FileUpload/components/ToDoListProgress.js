@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import { makeStyles, withStyles } from '@material-ui/styles';
+import { withStyles } from '@material-ui/styles';
 import {
   Card,
   CardContent,

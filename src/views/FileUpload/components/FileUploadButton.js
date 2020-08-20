@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom'
+//import ReactDOM from 'react-dom'
 import firebase from '../../../firebase/firebase';
 import Button from '@material-ui/core/Button';
 import Backdrop from '@material-ui/core/Backdrop';
@@ -25,7 +25,7 @@ class FileUploadButton extends Component {
     async onChangeHandler(event) {
         this.setState({open: true});
         const that = this;
-        let url = firebase.uploadFile(event.target.files[0]).then(function(result){
+        firebase.uploadFile(event.target.files[0]).then(function(result){
             result.ref.getDownloadURL().then(function(downloadURL) {
                 //console.log(downloadURL);
                 that.setState({open: false});

@@ -16,8 +16,8 @@ import {
 } from './components';
 import firebase from '../../firebase/firebase';
 
-import { DataGrid } from 'tubular-react';
-import { createColumn } from "tubular-common";
+//import { DataGrid } from 'tubular-react';
+//import { createColumn } from "tubular-common";
 
 const styles = theme => ({
   root: {

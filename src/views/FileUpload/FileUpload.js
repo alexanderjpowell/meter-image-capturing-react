@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom'
+//import ReactDOM from 'react-dom'
 import firebase from '../../firebase/firebase';
 import empty from '../Images/empty-search.svg';
 import { FileUploadButton, ToDoListProgress } from './components';
-import { Grid, Container, Card, CardContent, Typography } from '@material-ui/core';
-import { createMuiTheme, ThemeProvider, withStyles, makeStyles } from '@material-ui/core/styles';
+import { Grid, Card, CardContent, Typography } from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
 
 const styles = (theme) => ({
     root: {
