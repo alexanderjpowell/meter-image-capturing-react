@@ -10,6 +10,7 @@ import Chip from '@material-ui/core/Chip';
 import TuneIcon from '@material-ui/icons/Tune';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
+import Tooltip from '@material-ui/core/Tooltip';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import { MuiThemeProvider, Button, Grid } from "@material-ui/core";
@@ -135,17 +136,18 @@ class DetailedExpansionPanel extends Component {
                             <div className={classes.column}>
                                 <Typography>Sort By:</Typography>
                                 <div>
-                                    <Chip label="Timestamp" className={classes.chip} />
+                                    <Tooltip title="Feature coming soon"><Chip label="Timestamp" className={classes.chip}/></Tooltip>
                                 </div>
                                 <div>
-                                    <Chip label="Machine ID" className={classes.chip} />
+                                    <Tooltip title="Feature coming soon"><Chip label="Machine ID" className={classes.chip}/></Tooltip>
                                 </div>
                             </div>
                         </Grid>
                         <Grid item lg={3} sm={12} md={12}>
                             <div className={classes.column}>
                                 <Typography>By User:</Typography>
-                                <FormControl variant="outlined" className={classes.formControl}>
+                                <Tooltip title="Feature coming soon">
+                                <FormControl variant="outlined" disabled='true' className={classes.formControl}>
                                     <InputLabel id="demo-simple-select-outlined-label">User</InputLabel>
                                     <Select
                                         labelId="demo-simple-select-outlined-label"
@@ -160,6 +162,7 @@ class DetailedExpansionPanel extends Component {
                                         <MenuItem value={40}>Patrick</MenuItem>
                                     </Select>
                                 </FormControl>
+                                </Tooltip>
                             </div>
                         </Grid>
                         <Grid item lg={3} sm={12}>

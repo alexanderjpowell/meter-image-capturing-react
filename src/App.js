@@ -11,6 +11,7 @@ import 'react-perfect-scrollbar/dist/css/styles.css';
 import './assets/scss/index.scss';
 import validators from './common/validators';
 import Routes from './Routes';
+import { LoaderDots } from '@thumbtack/thumbprint-react';
 
 const browserHistory = createBrowserHistory();
 
@@ -38,5 +39,8 @@ export default function App() {
           <Routes />
         </Router>
       </ThemeProvider>
-  ) : <div><h3>Loading</h3></div>;
+  ) : <div style={{
+        position: 'absolute', left: '50%', top: '50%',
+        transform: 'translate(-50%, -50%)'
+      }}><LoaderDots theme="muted"/></div>;
 }

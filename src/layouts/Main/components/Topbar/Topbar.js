@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Link as RouterLink } from 'react-router-dom';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
@@ -54,7 +54,7 @@ function Topbar(props) {
       className={clsx(classes.root, className)}
     >
       <Toolbar>
-        {/*<RouterLink to="/">*/}
+        <RouterLink to="/dashboard">
           <img
             alt="Logo"
             //src="/images/logos/logo--white.svg"
@@ -63,7 +63,7 @@ function Topbar(props) {
             //src="/images/logos/logo.jpg" height="50px" width="50px"
           />
           
-        {/*</RouterLink>*/}
+        </RouterLink>
         <Typography className={classes.title} variant="h4" noWrap>
             Meter Image Capturing
           </Typography>

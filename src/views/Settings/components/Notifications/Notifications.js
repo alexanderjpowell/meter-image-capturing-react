@@ -12,7 +12,7 @@ import {
   //FormControlLabel,
   //Checkbox,
   //Typography,
-  Button,
+  //Button,
   TextField
 } from '@material-ui/core';
 import firebase from '../../../../firebase/firebase';
@@ -51,12 +51,12 @@ const Notifications = props => {
           </Grid>
         </CardContent>
         <CardActions>
-          <Button
+          {/*<Button
             color="primary"
             variant="outlined"
           >
             Save
-          </Button>
+          </Button>*/}
         </CardActions>
       {/*<form>
         <CardHeader

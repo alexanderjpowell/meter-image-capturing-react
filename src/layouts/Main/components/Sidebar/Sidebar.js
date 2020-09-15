@@ -10,6 +10,7 @@ import PeopleIcon from '@material-ui/icons/People';
 //import ImageIcon from '@material-ui/icons/Image';
 //import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import SettingsIcon from '@material-ui/icons/Settings';
+import DescriptionIcon from '@material-ui/icons/Description';
 //import LockOpenIcon from '@material-ui/icons/LockOpen';
 import { Profile, SidebarNav } from './components';
 
@@ -55,7 +56,7 @@ const Sidebar = props => {
     {
       title: 'Report Upload',
       href: '/upload',
-      icon: <PeopleIcon />
+      icon: <DescriptionIcon />
     },
     /*{
       title: 'Products',

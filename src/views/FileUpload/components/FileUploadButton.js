@@ -6,6 +6,9 @@ import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { withStyles } from '@material-ui/core/styles';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+//import Snackbar from '@material-ui/core/Snackbar';
+//import IconButton from '@material-ui/core/IconButton';
+//import CloseIcon from '@material-ui/icons/Close';
 
 const styles = (theme) => ({
     backdrop: {
@@ -18,8 +21,9 @@ class FileUploadButton extends Component {
 
     constructor(props) {
         super(props);
+        this.state = { open: false, snackBarOpen: false };
         this.onChangeHandler = this.onChangeHandler.bind(this);
-        this.state = { open: false };
+        this.handleSnackBarClose = this.handleSnackBarClose.bind(this);
     }
 
     async onChangeHandler(event) {
@@ -29,8 +33,15 @@ class FileUploadButton extends Component {
             result.ref.getDownloadURL().then(function(downloadURL) {
                 //console.log(downloadURL);
                 that.setState({open: false});
+                //that.setState({snackBarOpen: true});
+                window.location.reload();
+                
             });
         });
+    }
+
+    handleSnackBarClose() {
+        this.setState({snackBarOpen: false});
     }
 
     render() {
@@ -43,6 +54,23 @@ class FileUploadButton extends Component {
                 <Backdrop className={classes.backdrop} open={this.state.open}>
                     <CircularProgress color="inherit" />
                 </Backdrop>
+                {/*<Snackbar
+                    anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                    }}
+                    open={this.snackBarOpen}
+                    autoHideDuration={6000}
+                    onClose={this.handleSnackBarClose}
+                    message="Note archived"
+                    action={
+                    <React.Fragment>
+                        <IconButton size="small" aria-label="close" color="inherit" onClick={this.handleSnackBarClose}>
+                        <CloseIcon fontSize="small" />
+                        </IconButton>
+                    </React.Fragment>
+                    }
+                />*/}
             </div>
         );
     }

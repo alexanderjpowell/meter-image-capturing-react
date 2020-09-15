@@ -36,7 +36,7 @@ class UsersTable extends Component {
 
   return (
     <MaterialTable
-      title="Editable Example"
+      title="All Users"
       columns={this.state.columns}
       data={this.state.data}
       options={{
@@ -46,8 +46,9 @@ class UsersTable extends Component {
         }
       }}
       editable={{
-        onRowAdd: (newData) =>
+        /*onRowAdd: (newData) =>
           new Promise((resolve) => {
+            console.log('onRowAdd');
             
             firebase.addUserName(newData.name, newData.pinCode);
             newData['pinCode'] = '****';
@@ -59,7 +60,7 @@ class UsersTable extends Component {
                 return { ...prevState, data };
               });
             }, 600);
-          }),
+          }),*/
         /*onRowUpdate: (newData, oldData) =>
           new Promise((resolve) => {
             firebase.updateUserName(oldData.name, newData.name, newData.pinCode);

@@ -40,26 +40,18 @@ class Firebase {
         user.updateProfile({ displayName: name });
     }
 
-    changePassword(currentPassword, newPassword) {
-        let credential = firebase.auth.EmailAuthProvider.credential(this.auth.currentUser.email, currentPassword);
-        let user = this.getCurrentUser();
-        user.reauthenticateWithCredential(credential)
-        .then(function() {
-            alert('successfully reauthenticated');
-            user.updatePassword(newPassword)
-            .then(function() {
-                alert('password change successful')
-            }).catch(function(error) {
-                alert(error);
-            });
-        }).catch(function(error) {
-            alert(error);
-        });
+    async reauthenticateUserWithPassword(password) {
+        let credential = firebase.auth.EmailAuthProvider.credential(this.auth.currentUser.email, password);
+        return await this.getCurrentUser().reauthenticateWithCredential(credential);
+    }
+
+    async changePassword(newPassword) {
+        return await this.getCurrentUser().updatePassword(newPassword);
     }
 
     async queryCustomDateRange(startDate, endDate) {
         let scansRef = this.db.collection('users').doc(this.auth.currentUser.uid).collection('scans')
-            .where('timestamp', '>=', startDate).where('timestamp', '<=', endDate).orderBy('timestamp', 'desc').limit(5);
+            .where('timestamp', '>=', startDate).where('timestamp', '<=', endDate).orderBy('timestamp', 'desc');//.limit(5);
         let ret = [];
         let querySnapshot = await scansRef.get();
         querySnapshot.forEach(function(doc) {
@@ -81,7 +73,7 @@ class Firebase {
     async queryLastHourScans() {
         let range = new Date(Date.now() - 3600000); // 1 * 60 * 60 * 1000
         let scansRef = this.db.collection('users').doc(this.auth.currentUser.uid).collection('scans')
-            .where('timestamp', '>', range).orderBy('timestamp', 'desc').limit(50);
+            .where('timestamp', '>', range).orderBy('timestamp', 'desc');//.limit(50);
         let querySnapshot = await scansRef.get();
         let ret = [];
         querySnapshot.forEach(function(doc) {
@@ -93,7 +85,7 @@ class Firebase {
     async queryLastDayScans() {
         let range = new Date(Date.now() - 86400000); // 24 * 60 * 60 * 1000
         let scansRef = this.db.collection('users').doc(this.auth.currentUser.uid).collection('scans')
-            .where('timestamp', '>', range).orderBy('timestamp', 'desc').limit(50);
+            .where('timestamp', '>', range).orderBy('timestamp', 'desc');//.limit(50);
         let querySnapshot = await scansRef.get();
         let ret = [];
         querySnapshot.forEach(function(doc) {
@@ -105,7 +97,7 @@ class Firebase {
     async queryLastWeekScans() {
         let range = new Date(Date.now() - 604800000); // 24 * 7 * 60 * 60 * 1000
         let scansRef = this.db.collection('users').doc(this.auth.currentUser.uid).collection('scans')
-            .where('timestamp', '>', range).orderBy('timestamp', 'desc').limit(50);
+            .where('timestamp', '>', range).orderBy('timestamp', 'desc');//.limit(50);
         let querySnapshot = await scansRef.get();
         let ret = [];
         querySnapshot.forEach(function(doc) {
@@ -118,7 +110,7 @@ class Firebase {
         let ret = [];
         try {
             let scansRef = this.db.collection('users').doc(this.auth.currentUser.uid).collection('scans')
-                .orderBy('timestamp', 'desc').limit(10);
+                .orderBy('timestamp', 'desc').limit(100);
             let querySnapshot = await scansRef.get();
             querySnapshot.forEach(function(doc) {
                 ret.push(doc);
@@ -266,13 +258,19 @@ class Firebase {
             .then(function(url) {
                 return url;
             }).catch(function(error) {
-                return null;
+                return -1;
             });
         return fileRef;
     }
 
     async getUploadFileSize() {
-
+        let fileRef = await this.storage.ref().child(this.getCurrentUserUid() + '.csv').getMetadata()
+            .then(function(metadata) {
+                return metadata.size;
+            }).catch(function(error) {
+                return -1;
+            });
+        return fileRef;
     }
 
     async getUploadFileData() {
@@ -282,11 +280,18 @@ class Firebase {
             if (doc.exists) {
                 ret[0] = doc.data().uploadArray.length;
                 ret[1] = doc.data().rowCount;
-                ret[2] = doc.data().timestamp;
+                ret[2] = doc.data().timestamp.toDate().toDateString();
             }
             return ret;
         });
         return counts;
+    }
+
+    setToDoListener() {
+        return this.db.collection('formUploads').doc(this.auth.currentUser.uid);/*
+            .onSnapshot(function(doc) {
+                console.log("Current data: ", doc.data());
+            });*/
     }
 }
 

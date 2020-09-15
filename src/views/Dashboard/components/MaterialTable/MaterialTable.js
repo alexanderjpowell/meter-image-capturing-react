@@ -5,6 +5,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import MaterialTable from 'material-table';
+import Skeleton from '@material-ui/lab/Skeleton';
 //import TextField from '@material-ui/core/TextField';
 //import MenuItem from '@material-ui/core/MenuItem';
 //import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
@@ -24,16 +25,16 @@ class MaterialTableDemo extends Component {
     this.state = {
       columns: [
         { title: 'Machine ID', field: 'machineId', width: 150 },
-        { title: 'P1', field: 'progressive1', width: 80 },
-        { title: 'P2', field: 'progressive2', width: 80 },
-        { title: 'P3', field: 'progressive3', width: 80 },
-        { title: 'P4', field: 'progressive4', width: 80 },
-        { title: 'P5', field: 'progressive5', width: 80 },
-        { title: 'P6', field: 'progressive6', width: 80 },
-        { title: 'P7', field: 'progressive7', width: 80 },
-        { title: 'P8', field: 'progressive8', width: 80 },
-        { title: 'P9', field: 'progressive9', width: 80 },
-        { title: 'P10', field: 'progressive10', width: 80 },
+        { title: 'P1', field: 'progressive1', type: 'numeric', width: 80 },
+        { title: 'P2', field: 'progressive2', type: 'numeric', width: 80 },
+        { title: 'P3', field: 'progressive3', type: 'numeric', width: 80 },
+        { title: 'P4', field: 'progressive4', type: 'numeric', width: 80 },
+        { title: 'P5', field: 'progressive5', type: 'numeric', width: 80 },
+        { title: 'P6', field: 'progressive6', type: 'numeric', width: 80 },
+        { title: 'P7', field: 'progressive7', type: 'numeric', width: 80 },
+        { title: 'P8', field: 'progressive8', type: 'numeric', width: 80 },
+        { title: 'P9', field: 'progressive9', type: 'numeric', width: 80 },
+        { title: 'P10', field: 'progressive10', type: 'numeric', width: 80 },
         { title: 'Timestamp', field: 'timestamp', editable: 'false', width: 150 },
         { title: 'User', field: 'userName', editable: 'false', width: 80 },
         { title: 'Location', field: 'location', width: 100 },
@@ -41,14 +42,15 @@ class MaterialTableDemo extends Component {
       data: [],
       //emptyDataSourceMessage: 'No Results',
       open: false,
+      initialLoad: true,
     };
   }
 
-  /*async componentDidUpdate(prevProps) {
-    alert("componentDidUpdate");
+  async componentDidUpdate(prevProps) {
+    //alert("componentDidUpdate");
     // Custom Date Range
     if ((this.props.startDate !== prevProps.startDate) || (this.props.endDate !== prevProps.endDate)) {
-      alert('1');
+      //alert('1');
       //alert(this.props.startDate + ' : ' + this.props.endDate);
       let scans = await firebase.queryCustomDateRange(this.props.startDate, this.props.endDate);
       let rowData = [];
@@ -62,10 +64,10 @@ class MaterialTableDemo extends Component {
         let progressive5 = scans[i].get('progressive5');
         let progressive6 = scans[i].get('progressive6');
         let location = scans[i].get('location');
-        let timestamp = scans[i].get('timestamp').toDate().toDateString();
-        let user = scans[i].get('userName');
+        let timestamp = scans[i].get('timestamp').toDate().toLocaleString();
+        let userName = scans[i].get('userName');
         let notes = scans[i].get('notes');
-        let row = { docId: docId, machineId: machineId, progressive1: progressive1, progressive2: progressive2, progressive3: progressive3, progressive4: progressive4, progressive5: progressive5, progressive6: progressive6, timestamp: timestamp, user: user, notes: notes };
+        let row = { docId: docId, machineId: machineId, progressive1: progressive1, progressive2: progressive2, progressive3: progressive3, progressive4: progressive4, progressive5: progressive5, progressive6: progressive6, location: location, timestamp: timestamp, userName: userName, notes: notes };
         rowData.push(row);
       }
       this.setState({ data: rowData });
@@ -74,7 +76,7 @@ class MaterialTableDemo extends Component {
       
       //alert(this.props.latestScansRange);
       if (this.props.latestScansRange === 'hour') {
-        alert('2');
+        //alert('2');
         let scans = await firebase.queryLastHourScans();
         let rowData = [];
         for (let i = 0; i < scans.length; i++) {
@@ -86,15 +88,16 @@ class MaterialTableDemo extends Component {
           let progressive4 = scans[i].get('progressive4');
           let progressive5 = scans[i].get('progressive5');
           let progressive6 = scans[i].get('progressive6');
-          let timestamp = scans[i].get('timestamp').toDate().toDateString();
-          let user = scans[i].get('userName');
+          let location = scans[i].get('location');
+          let timestamp = scans[i].get('timestamp').toDate().toLocaleString();
+          let userName = scans[i].get('userName');
           let notes = scans[i].get('notes');
-          let row = { docId: docId, machineId: machineId, progressive1: progressive1, progressive2: progressive2, progressive3: progressive3, progressive4: progressive4, progressive5: progressive5, progressive6: progressive6, timestamp: timestamp, user: user, notes: notes };
+          let row = { docId: docId, machineId: machineId, progressive1: progressive1, progressive2: progressive2, progressive3: progressive3, progressive4: progressive4, progressive5: progressive5, progressive6: progressive6, location: location, timestamp: timestamp, userName: userName, notes: notes };
           rowData.push(row);
         }
         this.setState({ data: rowData });
       } else if (this.props.latestScansRange === 'day') {
-        alert('3');
+        //alert('3');
         let scans = await firebase.queryLastDayScans();
         let rowData = [];
         for (let i = 0; i < scans.length; i++) {
@@ -106,15 +109,16 @@ class MaterialTableDemo extends Component {
           let progressive4 = scans[i].get('progressive4');
           let progressive5 = scans[i].get('progressive5');
           let progressive6 = scans[i].get('progressive6');
-          let timestamp = scans[i].get('timestamp').toDate().toDateString();
-          let user = scans[i].get('userName');
+          let location = scans[i].get('location');
+          let timestamp = scans[i].get('timestamp').toDate().toLocaleString();
+          let userName = scans[i].get('userName');
           let notes = scans[i].get('notes');
-          let row = { docId: docId, machineId: machineId, progressive1: progressive1, progressive2: progressive2, progressive3: progressive3, progressive4: progressive4, progressive5: progressive5, progressive6: progressive6, timestamp: timestamp, user: user, notes: notes };
+          let row = { docId: docId, machineId: machineId, progressive1: progressive1, progressive2: progressive2, progressive3: progressive3, progressive4: progressive4, progressive5: progressive5, progressive6: progressive6, location: location, timestamp: timestamp, userName: userName, notes: notes };
           rowData.push(row);
         }
         this.setState({ data: rowData });
       } else if (this.props.latestScansRange === 'week') {
-        alert('4');
+        //alert('4');
         let scans = await firebase.queryLastWeekScans();
         let rowData = [];
         for (let i = 0; i < scans.length; i++) {
@@ -126,16 +130,17 @@ class MaterialTableDemo extends Component {
           let progressive4 = scans[i].get('progressive4');
           let progressive5 = scans[i].get('progressive5');
           let progressive6 = scans[i].get('progressive6');
-          let timestamp = scans[i].get('timestamp').toDate().toDateString();
-          let user = scans[i].get('userName');
+          let location = scans[i].get('location');
+          let timestamp = scans[i].get('timestamp').toDate().toLocaleString();
+          let userName = scans[i].get('userName');
           let notes = scans[i].get('notes');
-          let row = { docId: docId, machineId: machineId, progressive1: progressive1, progressive2: progressive2, progressive3: progressive3, progressive4: progressive4, progressive5: progressive5, progressive6: progressive6, timestamp: timestamp, user: user, notes: notes };
+          let row = { docId: docId, machineId: machineId, progressive1: progressive1, progressive2: progressive2, progressive3: progressive3, progressive4: progressive4, progressive5: progressive5, progressive6: progressive6, location: location, timestamp: timestamp, userName: userName, notes: notes };
           rowData.push(row);
         }
         this.setState({ data: rowData });
       }
     }
-  }*/
+  }
 
   // On mount, fetch most recent scans regardless of date
   async componentDidMount() {
@@ -152,13 +157,13 @@ class MaterialTableDemo extends Component {
       let progressive5 = scans[i].get('progressive5');
       let progressive6 = scans[i].get('progressive6');
       let location = scans[i].get('location');
-      let timestamp = scans[i].get('timestamp').toDate().toDateString();
+      let timestamp = scans[i].get('timestamp').toDate().toLocaleString();
       let userName = scans[i].get('userName');
       let notes = scans[i].get('notes');
       let row = { docId: docId, machineId: machineId, progressive1: progressive1, progressive2: progressive2, progressive3: progressive3, progressive4: progressive4, progressive5: progressive5, progressive6: progressive6, location: location, timestamp: timestamp, userName: userName, notes: notes };
       rowData.push(row);
     }
-    this.setState({ data: rowData });
+    this.setState({ data: rowData, initialLoad: false });
   }
 
   handleClose(event, reason) {
@@ -171,7 +176,7 @@ class MaterialTableDemo extends Component {
   render() {
     //alert('render');
     const open = this.state.open;
-    return (
+    return (this.state.initialLoad ? <Skeleton variant="rect"/> :
     <div>
     <MaterialTable
       title="Latest Scans"

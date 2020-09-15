@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
 //import ReactDOM from 'react-dom'
 import firebase from '../../firebase/firebase';
-import empty from '../Images/empty-search.svg';
+//import empty from '../Images/empty-search.svg';
 import { FileUploadButton, ToDoListProgress } from './components';
 import { Grid, Card, CardContent, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+//import ListItemText from '@material-ui/core/ListItemText';
 
 const styles = (theme) => ({
     root: {
@@ -52,9 +55,9 @@ class FileUpload extends Component {
 
     render() {
         const { classes } = this.props;
-        let display;
+        //let display;
         if (this.state.fileUrl === null) {
-            display = <Grid item
+            /*display = <Grid item
                         align="center"
                         xs={12}
                         lg={5}
@@ -63,15 +66,15 @@ class FileUpload extends Component {
                                 <img className={classes.paddingItem} src={empty} alt="Empty" width="50%" height="50%" />
                                 <Typography className={classes.description}>You haven't added any to do lists. Upload a file to get started:</Typography>
                             </Card>
-                        </Grid>
+                        </Grid>;*/
         } else {
-            display = <Grid item
+            /*display = <Grid item
                         align="center"
                         xs={12}
                         lg={5}
                         xl={5}>
                             <ToDoListProgress />
-                        </Grid>;
+                        </Grid>;*/
         }
         return (
             <div className={classes.root}>
@@ -87,19 +90,28 @@ class FileUpload extends Component {
                             <CardContent>
                                 <Typography className={classes.instructionsTitle}>CSV Upload Instructions</Typography><br/>
                                 <Typography className={classes.instructions}>MiC supports CSV file uploads for easier management of progressive scans. To get started create a .csv file with the following column headers:</Typography>
-                            <ul>
-                                <li>location</li>
-                                <li>machine_id</li>
-                                <li>description</li>
-                                <li>progressive_count</li>
-                                <li>user</li>
-                                <li>p_1, p_2, p_3, p_4, p_5, p_6, p_7, p_8, p_9, p_10</li>
-                            </ul>
-                            <div className={classes.paddingItem}><FileUploadButton /></div>
+                                <List dense="true">
+                                    <ListItem>location</ListItem>
+                                    <ListItem>machine_id - no two rows in your .csv should include the same machine_id</ListItem>
+                                    <ListItem>description</ListItem>
+                                    <ListItem>progressive_count (optional, between 1 and 10)</ListItem>
+                                    <ListItem>user (optional)</ListItem>
+                                    <ListItem>p_1, p_2, p_3, p_4, p_5, p_6, p_7, p_8, p_9, p_10 (optional)</ListItem>
+                                    <ListItem>r_1, r_2, r_3, r_4, r_5, r_6, r_7, r_8, r_9, r_10</ListItem>
+                                </List>
+                                <Typography className={classes.instructions}>You can view sample files here, here, here and here</Typography>
+                                <div className={classes.paddingItem}><FileUploadButton /></div>
                             </CardContent>
                         </Card>
                     </Grid>
-                    {display}
+                    {/*{display}*/}
+                    <Grid item
+                        align="center"
+                        xs={12}
+                        lg={5}
+                        xl={5}>
+                            <ToDoListProgress />
+                        </Grid>
                 </Grid>
             </div>
         );
