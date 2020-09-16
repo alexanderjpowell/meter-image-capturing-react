@@ -96,7 +96,7 @@ render() {
     return (<Card className={classes.emptyState}>
       <img className={classes.paddingItem} src={empty} alt="Empty" width="50%" height="50%" />
       <Typography className={classes.description}>You haven't added any to do lists. Upload a file to get started:</Typography>
-      <Typography className={classes.description}>Note: In some circumstances it may take several minutes for the file to be processed.</Typography>
+      <Typography className={classes.description}>Note: In some circumstances it may take several minutes for the file to be processed after being uploaded.</Typography>
   </Card>);
   }
   return (
@@ -112,7 +112,7 @@ render() {
               gutterBottom
               variant="body2">TO DO LIST PROGRESS</Typography>
             <Typography variant="h3">
-              {loading ? <Skeleton variant="text" /> : this.state.processedRowCount/this.state.totalRowCount * 100 + '%'}
+              {loading ? <Skeleton variant="text" /> : Math.round(this.state.processedRowCount/this.state.totalRowCount * 100) + '%'}
             </Typography>
           </Grid>
           <Grid item>

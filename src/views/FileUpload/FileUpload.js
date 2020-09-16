@@ -8,6 +8,7 @@ import { withStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 //import ListItemText from '@material-ui/core/ListItemText';
+import Link from '@material-ui/core/Link';
 
 const styles = (theme) => ({
     root: {
@@ -97,9 +98,9 @@ class FileUpload extends Component {
                                     <ListItem>progressive_count (optional, between 1 and 10)</ListItem>
                                     <ListItem>user (optional)</ListItem>
                                     <ListItem>p_1, p_2, p_3, p_4, p_5, p_6, p_7, p_8, p_9, p_10 (optional)</ListItem>
-                                    <ListItem>r_1, r_2, r_3, r_4, r_5, r_6, r_7, r_8, r_9, r_10</ListItem>
+                                    <ListItem>r_1, r_2, r_3, r_4, r_5, r_6, r_7, r_8, r_9, r_10 (optional)</ListItem>
                                 </List>
-                                <Typography className={classes.instructions}>You can view sample files here, here, here and here</Typography>
+                                <Typography className={classes.instructions}>You can view sample files <Link href="https://raw.githubusercontent.com/alexanderjpowell/meter-image-capturing-react/master/example_upload_files/sample_number.csv" target="_blank" rel="noreferrer">here</Link>, <Link href="https://raw.githubusercontent.com/alexanderjpowell/meter-image-capturing-react/master/example_upload_files/sample_descriptions.csv" target="_blank" rel="noreferrer">here</Link>, <Link href="https://raw.githubusercontent.com/alexanderjpowell/meter-image-capturing-react/master/example_upload_files/sample_descriptions_with_users.csv" target="_blank" rel="noreferrer">here</Link> and <Link href="https://raw.githubusercontent.com/alexanderjpowell/meter-image-capturing-react/master/example_upload_files/sample_descriptions_10_progressives.csv" target="_blank" rel="noreferrer">here</Link>.</Typography>
                                 <div className={classes.paddingItem}><FileUploadButton /></div>
                             </CardContent>
                         </Card>

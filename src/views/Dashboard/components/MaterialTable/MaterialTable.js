@@ -25,18 +25,29 @@ class MaterialTableDemo extends Component {
     this.state = {
       columns: [
         { title: 'Machine ID', field: 'machineId', width: 150 },
-        { title: 'P1', field: 'progressive1', type: 'numeric', width: 80 },
-        { title: 'P2', field: 'progressive2', type: 'numeric', width: 80 },
-        { title: 'P3', field: 'progressive3', type: 'numeric', width: 80 },
-        { title: 'P4', field: 'progressive4', type: 'numeric', width: 80 },
-        { title: 'P5', field: 'progressive5', type: 'numeric', width: 80 },
-        { title: 'P6', field: 'progressive6', type: 'numeric', width: 80 },
-        { title: 'P7', field: 'progressive7', type: 'numeric', width: 80 },
-        { title: 'P8', field: 'progressive8', type: 'numeric', width: 80 },
-        { title: 'P9', field: 'progressive9', type: 'numeric', width: 80 },
-        { title: 'P10', field: 'progressive10', type: 'numeric', width: 80 },
+        { title: 'P1', field: 'progressive1', width: 80 },
+        { title: 'P2', field: 'progressive2', width: 80 },
+        { title: 'P3', field: 'progressive3', width: 80 },
+        { title: 'P4', field: 'progressive4', width: 80 },
+        { title: 'P5', field: 'progressive5', width: 80 },
+        { title: 'P6', field: 'progressive6', width: 80 },
+        { title: 'P7', field: 'progressive7', width: 80 },
+        { title: 'P8', field: 'progressive8', width: 80 },
+        { title: 'P9', field: 'progressive9', width: 80 },
+        { title: 'P10', field: 'progressive10', width: 80 },
+        { title: 'R1', field: 'reset1', width: 80, hidden: true, export: true },
+        { title: 'R2', field: 'reset2', width: 80, hidden: true, export: true },
+        { title: 'R3', field: 'reset3', width: 80, hidden: true, export: true },
+        { title: 'R4', field: 'reset4', width: 80, hidden: true, export: true },
+        { title: 'R5', field: 'reset5', width: 80, hidden: true, export: true },
+        { title: 'R6', field: 'reset6', width: 80, hidden: true, export: true },
+        { title: 'R7', field: 'reset7', width: 80, hidden: true, export: true },
+        { title: 'R8', field: 'reset8', width: 80, hidden: true, export: true },
+        { title: 'R9', field: 'reset9', width: 80, hidden: true, export: true },
+        { title: 'R10', field: 'reset10', width: 80, hidden: true, export: true },
         { title: 'Timestamp', field: 'timestamp', editable: 'false', width: 150 },
         { title: 'User', field: 'userName', editable: 'false', width: 80 },
+        { title: 'Notes', field: 'notes' },
         { title: 'Location', field: 'location', width: 100 },
       ],
       data: [],
@@ -88,11 +99,25 @@ class MaterialTableDemo extends Component {
           let progressive4 = scans[i].get('progressive4');
           let progressive5 = scans[i].get('progressive5');
           let progressive6 = scans[i].get('progressive6');
+          let progressive7 = scans[i].get('progressive7');
+          let progressive8 = scans[i].get('progressive8');
+          let progressive9 = scans[i].get('progressive9');
+          let progressive10 = scans[i].get('progressive10');
+          let reset1 = scans[i].get('reset1');
+          let reset2 = scans[i].get('reset2');
+          let reset3 = scans[i].get('reset3');
+          let reset4 = scans[i].get('reset4');
+          let reset5 = scans[i].get('reset5');
+          let reset6 = scans[i].get('reset6');
+          let reset7 = scans[i].get('reset7');
+          let reset8 = scans[i].get('reset8');
+          let reset9 = scans[i].get('reset9');
+          let reset10 = scans[i].get('reset10');
           let location = scans[i].get('location');
           let timestamp = scans[i].get('timestamp').toDate().toLocaleString();
           let userName = scans[i].get('userName');
           let notes = scans[i].get('notes');
-          let row = { docId: docId, machineId: machineId, progressive1: progressive1, progressive2: progressive2, progressive3: progressive3, progressive4: progressive4, progressive5: progressive5, progressive6: progressive6, location: location, timestamp: timestamp, userName: userName, notes: notes };
+          let row = { docId: docId, machineId: machineId, progressive1: progressive1, progressive2: progressive2, progressive3: progressive3, progressive4: progressive4, progressive5: progressive5, progressive6: progressive6, progressive7: progressive7, progressive8: progressive8, progressive9: progressive9, progressive10: progressive10, reset1: reset1, reset2: reset2, reset3: reset3, reset4: reset4, reset5: reset5, reset6: reset6, reset7: reset7, reset8: reset8, reset9: reset9, reset10: reset10, location: location, timestamp: timestamp, userName: userName, notes: notes };
           rowData.push(row);
         }
         this.setState({ data: rowData });
@@ -109,11 +134,25 @@ class MaterialTableDemo extends Component {
           let progressive4 = scans[i].get('progressive4');
           let progressive5 = scans[i].get('progressive5');
           let progressive6 = scans[i].get('progressive6');
+          let progressive7 = scans[i].get('progressive7');
+          let progressive8 = scans[i].get('progressive8');
+          let progressive9 = scans[i].get('progressive9');
+          let progressive10 = scans[i].get('progressive10');
+          let reset1 = scans[i].get('reset1');
+          let reset2 = scans[i].get('reset2');
+          let reset3 = scans[i].get('reset3');
+          let reset4 = scans[i].get('reset4');
+          let reset5 = scans[i].get('reset5');
+          let reset6 = scans[i].get('reset6');
+          let reset7 = scans[i].get('reset7');
+          let reset8 = scans[i].get('reset8');
+          let reset9 = scans[i].get('reset9');
+          let reset10 = scans[i].get('reset10');
           let location = scans[i].get('location');
           let timestamp = scans[i].get('timestamp').toDate().toLocaleString();
           let userName = scans[i].get('userName');
           let notes = scans[i].get('notes');
-          let row = { docId: docId, machineId: machineId, progressive1: progressive1, progressive2: progressive2, progressive3: progressive3, progressive4: progressive4, progressive5: progressive5, progressive6: progressive6, location: location, timestamp: timestamp, userName: userName, notes: notes };
+          let row = { docId: docId, machineId: machineId, progressive1: progressive1, progressive2: progressive2, progressive3: progressive3, progressive4: progressive4, progressive5: progressive5, progressive6: progressive6, progressive7: progressive7, progressive8: progressive8, progressive9: progressive9, progressive10: progressive10, reset1: reset1, reset2: reset2, reset3: reset3, reset4: reset4, reset5: reset5, reset6: reset6, reset7: reset7, reset8: reset8, reset9: reset9, reset10: reset10, location: location, timestamp: timestamp, userName: userName, notes: notes };
           rowData.push(row);
         }
         this.setState({ data: rowData });
@@ -130,11 +169,25 @@ class MaterialTableDemo extends Component {
           let progressive4 = scans[i].get('progressive4');
           let progressive5 = scans[i].get('progressive5');
           let progressive6 = scans[i].get('progressive6');
+          let progressive7 = scans[i].get('progressive7');
+          let progressive8 = scans[i].get('progressive8');
+          let progressive9 = scans[i].get('progressive9');
+          let progressive10 = scans[i].get('progressive10');
+          let reset1 = scans[i].get('reset1');
+          let reset2 = scans[i].get('reset2');
+          let reset3 = scans[i].get('reset3');
+          let reset4 = scans[i].get('reset4');
+          let reset5 = scans[i].get('reset5');
+          let reset6 = scans[i].get('reset6');
+          let reset7 = scans[i].get('reset7');
+          let reset8 = scans[i].get('reset8');
+          let reset9 = scans[i].get('reset9');
+          let reset10 = scans[i].get('reset10');
           let location = scans[i].get('location');
           let timestamp = scans[i].get('timestamp').toDate().toLocaleString();
           let userName = scans[i].get('userName');
           let notes = scans[i].get('notes');
-          let row = { docId: docId, machineId: machineId, progressive1: progressive1, progressive2: progressive2, progressive3: progressive3, progressive4: progressive4, progressive5: progressive5, progressive6: progressive6, location: location, timestamp: timestamp, userName: userName, notes: notes };
+          let row = { docId: docId, machineId: machineId, progressive1: progressive1, progressive2: progressive2, progressive3: progressive3, progressive4: progressive4, progressive5: progressive5, progressive6: progressive6, progressive7: progressive7, progressive8: progressive8, progressive9: progressive9, progressive10: progressive10, reset1: reset1, reset2: reset2, reset3: reset3, reset4: reset4, reset5: reset5, reset6: reset6, reset7: reset7, reset8: reset8, reset9: reset9, reset10: reset10, location: location, timestamp: timestamp, userName: userName, notes: notes };
           rowData.push(row);
         }
         this.setState({ data: rowData });
@@ -156,11 +209,25 @@ class MaterialTableDemo extends Component {
       let progressive4 = scans[i].get('progressive4');
       let progressive5 = scans[i].get('progressive5');
       let progressive6 = scans[i].get('progressive6');
+      let progressive7 = scans[i].get('progressive7');
+      let progressive8 = scans[i].get('progressive8');
+      let progressive9 = scans[i].get('progressive9');
+      let progressive10 = scans[i].get('progressive10');
       let location = scans[i].get('location');
       let timestamp = scans[i].get('timestamp').toDate().toLocaleString();
       let userName = scans[i].get('userName');
       let notes = scans[i].get('notes');
-      let row = { docId: docId, machineId: machineId, progressive1: progressive1, progressive2: progressive2, progressive3: progressive3, progressive4: progressive4, progressive5: progressive5, progressive6: progressive6, location: location, timestamp: timestamp, userName: userName, notes: notes };
+      let reset1 = scans[i].get('reset1');
+      let reset2 = scans[i].get('reset2');
+      let reset3 = scans[i].get('reset3');
+      let reset4 = scans[i].get('reset4');
+      let reset5 = scans[i].get('reset5');
+      let reset6 = scans[i].get('reset6');
+      let reset7 = scans[i].get('reset7');
+      let reset8 = scans[i].get('reset8');
+      let reset9 = scans[i].get('reset9');
+      let reset10 = scans[i].get('reset10');
+      let row = { docId: docId, machineId: machineId, progressive1: progressive1, progressive2: progressive2, progressive3: progressive3, progressive4: progressive4, progressive5: progressive5, progressive6: progressive6, progressive7: progressive7, progressive8: progressive8, progressive9: progressive9, progressive10: progressive10, reset1: reset1, reset2: reset2, reset3: reset3, reset4: reset4, reset5: reset5, reset6: reset6, reset7: reset7, reset8: reset8, reset9: reset9, reset10: reset10, location: location, timestamp: timestamp, userName: userName, notes: notes };
       rowData.push(row);
     }
     this.setState({ data: rowData, initialLoad: false });
@@ -173,7 +240,17 @@ class MaterialTableDemo extends Component {
     this.setState({ open: false });
   }
 
+  createExportFileName() {
+    var date = new Date();
+    var month = date.getMonth() + 1;
+    var day = date.getDate();
+    var year = date.getYear() + 1900;
+    return month + "-" + day + "-" + year;
+  }
+
   render() {
+
+    const dateString = this.createExportFileName();
     //alert('render');
     const open = this.state.open;
     return (this.state.initialLoad ? <Skeleton variant="rect"/> :
@@ -216,6 +293,7 @@ class MaterialTableDemo extends Component {
         search: false,
         exportAllData: true,
         exportButton: true,
+        exportFileName: dateString,
         //selection: true,
         pageSize: 10,
         pageSizeOptions: [],
