@@ -293,6 +293,23 @@ class Firebase {
                 console.log("Current data: ", doc.data());
             });*/
     }
+
+    getDisplayResetValues() {
+        let doc = this.db.collection('users').doc(this.auth.currentUser.uid);
+        return doc.get().then(function(doc) {
+            if (doc.exists && 'displayResetValues' in doc.data()) {
+                //console.log(typeof(doc.data()));
+                return doc.data().displayResetValues;
+            }
+            return false;
+        }).catch(function(error) {
+            return false
+        });
+    }
+
+    setDisplayResetValues(value) {
+        this.db.collection('users').doc(this.auth.currentUser.uid).update({ displayResetValues: value });
+    }
 }
 
 export default new Firebase();
