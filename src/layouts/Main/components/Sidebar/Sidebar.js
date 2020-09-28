@@ -58,6 +58,11 @@ const Sidebar = props => {
       href: '/upload',
       icon: <DescriptionIcon />
     },
+    {
+      title: 'New Report',
+      href: '/newreport',
+      icon: <DescriptionIcon />
+    },
     /*{
       title: 'Products',
       href: '/products',
