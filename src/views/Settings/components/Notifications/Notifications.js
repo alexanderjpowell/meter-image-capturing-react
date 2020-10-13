@@ -10,6 +10,8 @@ import {
   Divider,
   TextField
 } from '@material-ui/core';
+import { MuiPickersUtilsProvider, KeyboardTimePicker } from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
 import Switch from '@material-ui/core/Switch';
 import Typography from '@material-ui/core/Typography';
 import firebase from '../../../../firebase/firebase';
@@ -36,26 +38,36 @@ class Notifications extends Component {
     let user = firebase.getCurrentUser();
     let name = user.displayName;
     let email = user.email;
-    this.state = { name: name, email: email, loading: true, displayResets: false };
-    this.handleChange = this.handleChange.bind(this);
+    this.state = { name: name, email: email, loading: true, displayResets: false, resetTime: null };
+    this.handleToggleSwitch = this.handleToggleSwitch.bind(this);
+    this.handleResetDateChange = this.handleResetDateChange.bind(this);
   }
 
   async componentDidMount() {
     let displayResets = await firebase.getDisplayResetValues();
-    this.setState({ displayResets: displayResets, loading: false });
+    let resetTime = await firebase.getResetTime();
+    //console.log(resetTime);
+    this.setState({ displayResets: displayResets, resetTime: resetTime, loading: false });
   }
 
-  handleChange(event) {
+  handleToggleSwitch(event) {
     this.setState({ displayResets: event.target.checked });
     firebase.setDisplayResetValues(event.target.checked);
+  }
+
+  handleResetDateChange(date) {
+    var dateObject = new Date(date);
+    //console.log(dateObject.getHours() + ":" + dateObject.getMinutes());
+    this.setState({resetTime: dateObject});
+    // Write to DB
+    firebase.setResetTime(dateObject);
   }
 
   render() {
     const { classes } = this.props;
 
     return (
-      <Card
-      >
+      <Card>
         <CardHeader
             title="Profile"
             subheader="Edit account details"
@@ -65,7 +77,21 @@ class Notifications extends Component {
             <Grid>
             <Grid><TextField label="Casino/Account Name" variant="outlined" value={this.state.name}></TextField></Grid>
             <Grid><TextField label="Account Email" variant="outlined" style={{ marginTop: '1rem' }} value={this.state.email}></TextField></Grid>
-            <Grid className={classes.switch}><Switch checked={this.state.displayResets} disabled={this.state.loading} onChange={this.handleChange} inputProps={{ 'aria-label': 'primary checkbox' }}/><Typography className={classes.switchText}>Include reset values in report downloads</Typography></Grid>
+            <Grid className={classes.switch}><Switch checked={this.state.displayResets} disabled={this.state.loading} onChange={this.handleToggleSwitch} inputProps={{ 'aria-label': 'primary checkbox' }}/><Typography className={classes.switchText}>Include reset values in report downloads</Typography></Grid>
+            <Grid>
+              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <KeyboardTimePicker
+                  margin="normal"
+                  id="time-picker"
+                  label="Daily Change Reset Time"
+                  value={this.state.resetTime}
+                  onChange={this.handleResetDateChange}
+                  KeyboardButtonProps={{
+                    'aria-label': 'change time',
+                  }}
+                />
+              </MuiPickersUtilsProvider>
+              </Grid>
             </Grid>
           </CardContent>
           <CardActions>

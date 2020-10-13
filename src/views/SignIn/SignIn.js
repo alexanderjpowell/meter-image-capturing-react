@@ -4,6 +4,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
 import Link from '@material-ui/core/Link';
 import Box from '@material-ui/core/Box';
+import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
@@ -70,12 +71,27 @@ function SignIn(props) {
     }
   }
 
+  const smallBreakpoint = 12;
+  const largeBreakpoint = 6;
+
   return (
     <ThemeProvider theme={theme}>
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
-        <img src='/images/logos/logo-transparent1.png' width="100" height="100" alt="MiC Logo"/>
+        <Grid container
+              direction="row"
+              justify="center"
+              alignItems="center"
+              spacing={3}>
+          <Grid item xs={smallBreakpoint} sm={smallBreakpoint} md={smallBreakpoint} lg={largeBreakpoint} xl={largeBreakpoint}>
+            <div align="center"><img src='/images/logos/logo-transparent1.png' width="100" height="100" alt="MiC Logo"/></div>
+          </Grid>
+          <Grid item xs={smallBreakpoint} sm={smallBreakpoint} md={smallBreakpoint} lg={largeBreakpoint} xl={largeBreakpoint}>
+            <div align="center"><img src='/images/logos/pds_logo.png' height="80" alt="PDS Logo"/></div>
+          </Grid>
+          <Grid item xs={12} sm={12} md={12} lg={12} xl={12}></Grid>
+        </Grid>
         <Typography component="h1" variant="h5">
           Meter Image Capturing
         </Typography>

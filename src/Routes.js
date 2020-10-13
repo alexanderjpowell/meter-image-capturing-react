@@ -1,6 +1,6 @@
 import React from 'react';
 import { Switch, Redirect } from 'react-router-dom';
-import firebase from './firebase/firebase';
+//import firebase from './firebase/firebase';
 import { RouteWithLayout } from './components';
 import { Main as MainLayout, Minimal as MinimalLayout } from './layouts';
 import {
@@ -21,8 +21,15 @@ import {
 //const Routes = () => {
 function Routes(props) {
 
-  if (!firebase.getCurrentUser()) {
-  }
+  //if (!firebase.getCurrentUser()) {
+    /*alert('here');
+    return (<RouteWithLayout
+        component={SignInView}
+        exact
+        layout={MinimalLayout}
+        path="/signin"
+      />);*/
+  //}
 
   return (
     <Switch>
@@ -53,7 +60,7 @@ function Routes(props) {
         component={DailyReportsView}
         exact
         layout={MainLayout}
-        path="/newreport"
+        path="/analytics"
       />
       {/*<RouteWithLayout
         component={ProductListView}

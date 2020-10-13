@@ -295,20 +295,266 @@ class Firebase {
     }
 
     getDisplayResetValues() {
-        let doc = this.db.collection('users').doc(this.auth.currentUser.uid);
-        return doc.get().then(function(doc) {
-            if (doc.exists && 'displayResetValues' in doc.data()) {
-                //console.log(typeof(doc.data()));
-                return doc.data().displayResetValues;
-            }
+        try {
+            let doc = this.db.collection('users').doc(this.auth.currentUser.uid);
+            return doc.get().then(function(doc) {
+                if (doc.exists && 'displayResetValues' in doc.data()) {
+                    //console.log(typeof(doc.data()));
+                    return doc.data().displayResetValues;
+                }
+                return false;
+            }).catch(function(error) {
+                return false;
+            });
+        } catch (error) {   
             return false;
-        }).catch(function(error) {
-            return false
-        });
+        }
     }
 
     setDisplayResetValues(value) {
         this.db.collection('users').doc(this.auth.currentUser.uid).update({ displayResetValues: value });
+    }
+
+    getResetTime() {
+        let doc = this.db.collection('users').doc(this.auth.currentUser.uid);
+        let ret = new Date();
+        ret.setHours(12);
+        ret.setMinutes(0);
+        return doc.get().then(function(doc) {
+            if (doc.exists && 'resetTime' in doc.data()) {
+                return doc.data().resetTime.toDate();
+            }
+            return ret;
+        }).catch(function(error) {
+            return ret;
+        });
+    }
+
+    setResetTime(time) {
+        this.db.collection('users').doc(this.auth.currentUser.uid).update({ resetTime: time });
+    }
+
+    async getDocsOnDate(year, month, day, resetHours, resetMinutes) {
+        let startDate, endDate;
+        startDate = new Date(year, month, day, resetHours, resetMinutes);
+        endDate = new Date(new Date(startDate).getTime() + 60 * 60 * 24 * 1000); // Add 24 hours
+        let scansRef = this.db.collection('users').doc(this.auth.currentUser.uid).collection('scans');
+        let query = scansRef.where('timestamp', '>=', startDate).where('timestamp', '<=', endDate).orderBy('timestamp', 'desc').limit(10);
+        let curDayScans = [];
+        await query.get().then(function(snapshot) {
+            snapshot.forEach(function(doc) {
+                curDayScans.push(doc.data());
+            });
+        }).catch(function(error) {
+            console.log(error);
+        });
+
+        // Now calculate previous day
+        startDate.setDate(startDate.getDate() - 1);
+        endDate.setDate(endDate.getDate() - 1);
+        query = scansRef.where('timestamp', '>=', startDate).where('timestamp', '<=', endDate).orderBy('timestamp', 'desc').limit(10);
+        let prevDayScans = [];
+        await query.get().then(function(snapshot) {
+            snapshot.forEach(function(doc) {
+                prevDayScans.push(doc.data());
+            });
+        }).catch(function(error) {
+            console.log(error);
+        });
+        //
+
+        // curDayScans is now an array of documents of the selected date, order by date
+        // for each of these documents, we need to pair it with docs from the previous 
+        // date that match the machine id.  The previous days scans are in prevDayScans
+        let ret = [];
+        let i = 0;
+        curDayScans.forEach(function(curDoc) {
+            ret.push([curDoc]);
+            prevDayScans.forEach(function(prevDoc) {
+                if (curDoc.machine_id === prevDoc.machine_id) {
+                    ret[i].push(prevDoc);
+                }
+            });
+            i++;
+        });
+        // ret looks like {{doc, doc}, {doc, doc}, {doc, doc, ...}} // mostly pairs but potentially 
+        // more than 2 values in each element of the parent array.  The first value in each is the 
+        // current day's value, and subsequent values are those that match the machine id
+
+        let out = [];
+        for (let i = 0; i < ret.length; i++) {
+            if (ret[i].length === 2) {
+                for (let j = 1; j <= 10; j++) {
+                    // also check if values aren't empty strings
+                    if (j === 1 && ret[i][0].progressive1 && ret[i][1].progressive1) {
+                        if (!isNaN(ret[i][1].progressive1) && !isNaN(ret[i][0].progressive1)) {
+                            let prev = +ret[i][1].progressive1;
+                            let cur = +ret[i][0].progressive1;
+                            let change = cur - prev;
+                            out.push({ 
+                                location: ret[i][0].location,
+                                machine_id: ret[i][0].machine_id,
+                                prog_name: 'Major',
+                                base: 10000,
+                                increment: 0.5,
+                                prev_day_val: prev,
+                                cur_day_val: cur,
+                                change: change//,
+                                //outlier: change > 0.005 * 10000
+                            });
+                        }
+                    } else if (j === 2 && ret[i][0].progressive2 && ret[i][1].progressive2) {
+                        if (!isNaN(ret[i][1].progressive2) && !isNaN(ret[i][0].progressive2)) {
+                            let prev = +ret[i][1].progressive2;
+                            let cur = +ret[i][0].progressive2;
+                            let change = cur - prev;
+                            out.push({ 
+                                location: ret[i][0].location,
+                                machine_id: ret[i][0].machine_id,
+                                prog_name: 'Major',
+                                base: 10000,
+                                increment: 0.5,
+                                prev_day_val: prev,
+                                cur_day_val: cur,
+                                change: change
+                            });
+                        }
+                    } else if (j === 3 && ret[i][0].progressive3 && ret[i][1].progressive3) {
+                        if (!isNaN(ret[i][1].progressive3) && !isNaN(ret[i][0].progressive3)) {
+                            let prev = +ret[i][1].progressive3;
+                            let cur = +ret[i][0].progressive3;
+                            let change = cur - prev;
+                            out.push({ 
+                                location: ret[i][0].location,
+                                machine_id: ret[i][0].machine_id,
+                                prog_name: 'Major',
+                                base: 10000,
+                                increment: 0.5,
+                                prev_day_val: prev,
+                                cur_day_val: cur,
+                                change: change
+                            });
+                        }
+                    } else if (j === 4 && ret[i][0].progressive4 && ret[i][1].progressive4) {
+                        if (!isNaN(ret[i][1].progressive4) && !isNaN(ret[i][0].progressive4)) {
+                            let prev = +ret[i][1].progressive4;
+                            let cur = +ret[i][0].progressive4;
+                            let change = cur - prev;
+                            out.push({ 
+                                location: ret[i][0].location,
+                                machine_id: ret[i][0].machine_id,
+                                prog_name: 'Major',
+                                base: 10000,
+                                increment: 0.5,
+                                prev_day_val: prev,
+                                cur_day_val: cur,
+                                change: change
+                            });
+                        }
+                    } else if (j === 5 && ret[i][0].progressive5 && ret[i][1].progressive5) {
+                        if (!isNaN(ret[i][1].progressive5) && !isNaN(ret[i][0].progressive5)) {
+                            let prev = +ret[i][1].progressive5;
+                            let cur = +ret[i][0].progressive5;
+                            let change = cur - prev;
+                            out.push({ 
+                                location: ret[i][0].location,
+                                machine_id: ret[i][0].machine_id,
+                                prog_name: 'Major',
+                                base: 10000,
+                                increment: 0.5,
+                                prev_day_val: prev,
+                                cur_day_val: cur,
+                                change: change
+                            });
+                        }
+                    } else if (j === 6 && ret[i][0].progressive6 && ret[i][1].progressive6) {
+                        if (!isNaN(ret[i][1].progressive6) && !isNaN(ret[i][0].progressive6)) {
+                            let prev = +ret[i][1].progressive6;
+                            let cur = +ret[i][0].progressive6;
+                            let change = cur - prev;
+                            out.push({ 
+                                location: ret[i][0].location,
+                                machine_id: ret[i][0].machine_id,
+                                prog_name: 'Major',
+                                base: 10000,
+                                increment: 0.5,
+                                prev_day_val: prev,
+                                cur_day_val: cur,
+                                change: change
+                            });
+                        }
+                    } else if (j === 7 && ret[i][0].progressive7 && ret[i][1].progressive7) {
+                        if (!isNaN(ret[i][1].progressive7) && !isNaN(ret[i][0].progressive7)) {
+                            let prev = +ret[i][1].progressive7;
+                            let cur = +ret[i][0].progressive7;
+                            let change = cur - prev;
+                            out.push({ 
+                                location: ret[i][0].location,
+                                machine_id: ret[i][0].machine_id,
+                                prog_name: 'Major',
+                                base: 10000,
+                                increment: 0.5,
+                                prev_day_val: prev,
+                                cur_day_val: cur,
+                                change: change
+                            });
+                        }
+                    } else if (j === 8 && ret[i][0].progressive8 && ret[i][1].progressive8) {
+                        if (!isNaN(ret[i][1].progressive8) && !isNaN(ret[i][0].progressive8)) {
+                            let prev = +ret[i][1].progressive8;
+                            let cur = +ret[i][0].progressive8;
+                            let change = cur - prev;
+                            out.push({ 
+                                location: ret[i][0].location,
+                                machine_id: ret[i][0].machine_id,
+                                prog_name: 'Major',
+                                base: 10000,
+                                increment: 0.5,
+                                prev_day_val: prev,
+                                cur_day_val: cur,
+                                change: change
+                            });
+                        }
+                    } else if (j === 9 && ret[i][0].progressive9 && ret[i][1].progressive9) {
+                        if (!isNaN(ret[i][1].progressive9) && !isNaN(ret[i][0].progressive9)) {
+                            let prev = +ret[i][1].progressive9;
+                            let cur = +ret[i][0].progressive9;
+                            let change = cur - prev;
+                            out.push({ 
+                                location: ret[i][0].location,
+                                machine_id: ret[i][0].machine_id,
+                                prog_name: 'Major',
+                                base: 10000,
+                                increment: 0.5,
+                                prev_day_val: prev,
+                                cur_day_val: cur,
+                                change: change
+                            });
+                        }
+                    } else if (j === 10 && ret[i][0].progressive10 && ret[i][1].progressive10) {
+                        if (!isNaN(ret[i][1].progressive10) && !isNaN(ret[i][0].progressive10)) {
+                            let prev = +ret[i][1].progressive10;
+                            let cur = +ret[i][0].progressive10;
+                            let change = cur - prev;
+                            out.push({ 
+                                location: ret[i][0].location,
+                                machine_id: ret[i][0].machine_id,
+                                prog_name: 'Major',
+                                base: 10000,
+                                increment: 0.5,
+                                prev_day_val: prev,
+                                cur_day_val: cur,
+                                change: change
+                            });
+                        }
+                    }
+                }
+            }
+        }
+
+        // out is an array of objects like:
+        // [ {location: ..., machine_id: ..., ..., change: ...}, {...} ]
+        return out;
     }
 }
 

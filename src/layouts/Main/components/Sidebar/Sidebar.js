@@ -9,6 +9,7 @@ import PeopleIcon from '@material-ui/icons/People';
 //import TextFieldsIcon from '@material-ui/icons/TextFields';
 //import ImageIcon from '@material-ui/icons/Image';
 //import AccountBoxIcon from '@material-ui/icons/AccountBox';
+import TrendingUpIcon from '@material-ui/icons/TrendingUp';
 import SettingsIcon from '@material-ui/icons/Settings';
 import DescriptionIcon from '@material-ui/icons/Description';
 //import LockOpenIcon from '@material-ui/icons/LockOpen';
@@ -59,9 +60,9 @@ const Sidebar = props => {
       icon: <DescriptionIcon />
     },
     {
-      title: 'New Report',
-      href: '/newreport',
-      icon: <DescriptionIcon />
+      title: 'Daily Change',
+      href: '/analytics',
+      icon: <TrendingUpIcon />
     },
     /*{
       title: 'Products',

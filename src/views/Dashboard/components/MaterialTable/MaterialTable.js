@@ -19,9 +19,10 @@ class MaterialTableDemo extends Component {
     super();
     if (!firebase.getCurrentUser()) {
       props.history.replace('/signin');
+      //return null;
     }
     //alert(firebase.getCurrentUser().email);
-    this.handleClose = this.handleClose.bind(this);
+    
     this.state = {
       columns: [
         { title: 'Machine ID', field: 'machineId', width: 150 },
@@ -57,6 +58,8 @@ class MaterialTableDemo extends Component {
       open: false,
       initialLoad: true,
     };
+
+    this.handleClose = this.handleClose.bind(this);
   }
 
   async componentDidUpdate(prevProps) {
@@ -274,10 +277,6 @@ class MaterialTableDemo extends Component {
   }
 
   render() {
-
-    const dateString = this.createExportFileName();
-    //alert('render');
-    const open = this.state.open;
     return (this.state.initialLoad ? <Skeleton variant="rect"/> :
     <div>
     <MaterialTable
@@ -318,7 +317,7 @@ class MaterialTableDemo extends Component {
         search: false,
         exportAllData: true,
         exportButton: true,
-        exportFileName: dateString,
+        exportFileName: this.createExportFileName(),
         //selection: true,
         pageSize: 10,
         pageSizeOptions: [],
@@ -398,7 +397,7 @@ class MaterialTableDemo extends Component {
           vertical: 'bottom',
           horizontal: 'left',
         }}
-        open={open}
+        open={this.state.open}
         autoHideDuration={3000}
         onClose={this.handleClose}
         message="Row deleted"
