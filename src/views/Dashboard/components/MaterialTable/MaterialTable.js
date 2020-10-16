@@ -236,7 +236,19 @@ class MaterialTableDemo extends Component {
       let timestamp = scans[i].get('timestamp').toDate().toLocaleString();
       let userName = scans[i].get('userName');
       let notes = scans[i].get('notes');
-      let reset1 = 'reset1' in scans[i] ? scans[i].get('reset1') : "";
+      
+      let reset1 = scans[i].get('reset1') == null ? "" : scans[i].get('reset1');
+      let reset2 = scans[i].get('reset2') == null ? "" : scans[i].get('reset2');
+      let reset3 = scans[i].get('reset3') == null ? "" : scans[i].get('reset3');
+      let reset4 = scans[i].get('reset4') == null ? "" : scans[i].get('reset4');
+      let reset5 = scans[i].get('reset5') == null ? "" : scans[i].get('reset5');
+      let reset6 = scans[i].get('reset6') == null ? "" : scans[i].get('reset6');
+      let reset7 = scans[i].get('reset7') == null ? "" : scans[i].get('reset7');
+      let reset8 = scans[i].get('reset8') == null ? "" : scans[i].get('reset8');
+      let reset9 = scans[i].get('reset9') == null ? "" : scans[i].get('reset9');
+      let reset10 = scans[i].get('reset10') == null ? "" : scans[i].get('reset10');
+
+      /*let reset1 = 'reset1' in scans[i] ? scans[i].get('reset1') : "";
       let reset2 = 'reset2' in scans[i] ? scans[i].get('reset2') : "";
       let reset3 = 'reset3' in scans[i] ? scans[i].get('reset3') : "";
       let reset4 = 'reset4' in scans[i] ? scans[i].get('reset4') : "";
@@ -245,7 +257,8 @@ class MaterialTableDemo extends Component {
       let reset7 = 'reset7' in scans[i] ? scans[i].get('reset7') : "";
       let reset8 = 'reset8' in scans[i] ? scans[i].get('reset8') : "";
       let reset9 = 'reset9' in scans[i] ? scans[i].get('reset9') : "";
-      let reset10 = 'reset10' in scans[i] ? scans[i].get('reset10') : "";
+      let reset10 = 'reset10' in scans[i] ? scans[i].get('reset10') : "";*/
+      
       let row = { docId: docId, machineId: machineId, progressive1: progressive1, progressive2: progressive2, progressive3: progressive3, progressive4: progressive4, progressive5: progressive5, progressive6: progressive6, progressive7: progressive7, progressive8: progressive8, progressive9: progressive9, progressive10: progressive10, reset1: reset1, reset2: reset2, reset3: reset3, reset4: reset4, reset5: reset5, reset6: reset6, reset7: reset7, reset8: reset8, reset9: reset9, reset10: reset10, location: location, timestamp: timestamp, userName: userName, notes: notes };
       rowData.push(row);
     }
