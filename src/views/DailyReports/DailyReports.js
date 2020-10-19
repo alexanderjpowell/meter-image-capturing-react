@@ -188,7 +188,7 @@ class DailyReports extends Component {
                                 columns={[
                                     { title: 'Location', field: 'location' },
                                     { title: 'Asset #', field: 'machine_id' },
-                                    { title: 'Prog Name', field: 'prog_name' },
+                                    { title: 'Description', field: 'prog_name' },
                                     { title: 'Base', field: 'base', type: 'numeric' },
                                     { title: 'Increment', field: 'increment', type: 'numeric' },
                                     { title: this.convertDateToString(this.calculatePreviousDate(this.state.queryDate)), field: 'prev_day_val', type: 'numeric' },
@@ -203,6 +203,7 @@ class DailyReports extends Component {
                                     { location: 'EC1003', machine_id: '1235', prog_name: 'Mini', base: 880 , increment: 0.25, prev_day_val: 1061.00, cur_day_val: 1068.00 , change: 7 },
                                 ]}*/
                                 options={{
+                                    pageSize: 10,
                                     toolbar: false,
                                     search: false,
                                     rowStyle: {
