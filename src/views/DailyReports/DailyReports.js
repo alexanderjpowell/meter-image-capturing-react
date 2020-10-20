@@ -33,7 +33,6 @@ class DailyReports extends Component {
         super();
         if (!firebase.getCurrentUser()) {
             props.history.replace('/signin');
-            //return null;
         }
         this.state = { data: [], overflowCount: 0, totalChange: 0, totalScans: 0, queryDate: new Date(), loading: true };
         this.handleDateChange = this.handleDateChange.bind(this);
@@ -43,7 +42,6 @@ class DailyReports extends Component {
     async handleDateChange(date) {
         var dateObject = new Date(date);
         var resetTime = await firebase.getResetTime();
-        console.log(resetTime);
         let year = dateObject.getFullYear();
         let month = dateObject.getMonth();
         let day = dateObject.getDate();
@@ -54,7 +52,7 @@ class DailyReports extends Component {
         let overflowcount = 0;
         data.forEach(function(item) {
             sum += item.change;
-            if (item.change >= item.base * item.increment) {
+            if (item.overflow) {
                 overflowcount++;
             }
         });
@@ -76,7 +74,7 @@ class DailyReports extends Component {
         const { classes } = this.props;
         const tooltipMessage = 'Please set the progressive reset time in the settings tab.  Querying a specific date will fetch all records in a 24 hour window starting at the reset time on the date in question. ';
 
-        var percentOver = this.state.overflowCount / this.state.totalScans;
+        var percentOver = (this.state.overflowCount / this.state.totalScans) * 100;
         if (isNaN(percentOver)) {
             percentOver = 0;
         }
@@ -187,8 +185,8 @@ class DailyReports extends Component {
                                 //title="Demo Title"
                                 columns={[
                                     { title: 'Location', field: 'location' },
-                                    { title: 'Asset #', field: 'machine_id' },
-                                    { title: 'Description', field: 'prog_name' },
+                                    { title: 'Machine ID', field: 'machine_id' },
+                                    //{ title: 'Description', field: 'prog_name' },
                                     { title: 'Base', field: 'base', type: 'numeric' },
                                     { title: 'Increment', field: 'increment', type: 'numeric' },
                                     { title: this.convertDateToString(this.calculatePreviousDate(this.state.queryDate)), field: 'prev_day_val', type: 'numeric' },

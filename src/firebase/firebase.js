@@ -335,6 +335,7 @@ class Firebase {
     }
 
     async getDocsOnDate(year, month, day, resetHours, resetMinutes) {
+        // First calculate current day
         let startDate, endDate;
         startDate = new Date(year, month, day, resetHours, resetMinutes);
         endDate = new Date(new Date(startDate).getTime() + 60 * 60 * 24 * 1000); // Add 24 hours
@@ -375,186 +376,50 @@ class Firebase {
                     ret[i].push(prevDoc);
                 }
             });
-            i++;
+            // Remove any elements that don't have exactly 2 elements
+            if (ret[i].length !== 2) {
+                ret[i].splice(i, 1);
+            } else {
+                i++;
+            }
         });
-        // ret looks like {{doc, doc}, {doc, doc}, {doc, doc, ...}} // mostly pairs but potentially 
-        // more than 2 values in each element of the parent array.  The first value in each is the 
-        // current day's value, and subsequent values are those that match the machine id
+        // ret looks like [{doc, doc}, {doc, doc}, ... ,{doc, doc}] // All pairs, the first value 
+        // in each is the current day's value, and the second is the previous day's first match
 
-        let out = [];
-        for (let i = 0; i < ret.length; i++) {
-            if (ret[i].length === 2) {
-                for (let j = 1; j <= 10; j++) {
-                    // also check if values aren't empty strings
-                    if (j === 1 && ret[i][0].progressive1 && ret[i][1].progressive1) {
-                        if (!isNaN(ret[i][1].progressive1) && !isNaN(ret[i][0].progressive1)) {
-                            let prev = +ret[i][1].progressive1;
-                            let cur = +ret[i][0].progressive1;
-                            let change = cur - prev;
-                            out.push({ 
-                                location: ret[i][0].location,
-                                machine_id: ret[i][0].machine_id,
-                                prog_name: 'Major',
-                                base: 10000,
-                                increment: 0.5,
-                                prev_day_val: prev,
-                                cur_day_val: cur,
-                                change: change//,
-                                //outlier: change > 0.005 * 10000
-                            });
-                        }
-                    } else if (j === 2 && ret[i][0].progressive2 && ret[i][1].progressive2) {
-                        if (!isNaN(ret[i][1].progressive2) && !isNaN(ret[i][0].progressive2)) {
-                            let prev = +ret[i][1].progressive2;
-                            let cur = +ret[i][0].progressive2;
-                            let change = cur - prev;
-                            out.push({ 
-                                location: ret[i][0].location,
-                                machine_id: ret[i][0].machine_id,
-                                prog_name: 'Major',
-                                base: 10000,
-                                increment: 0.5,
-                                prev_day_val: prev,
-                                cur_day_val: cur,
-                                change: change
-                            });
-                        }
-                    } else if (j === 3 && ret[i][0].progressive3 && ret[i][1].progressive3) {
-                        if (!isNaN(ret[i][1].progressive3) && !isNaN(ret[i][0].progressive3)) {
-                            let prev = +ret[i][1].progressive3;
-                            let cur = +ret[i][0].progressive3;
-                            let change = cur - prev;
-                            out.push({ 
-                                location: ret[i][0].location,
-                                machine_id: ret[i][0].machine_id,
-                                prog_name: 'Major',
-                                base: 10000,
-                                increment: 0.5,
-                                prev_day_val: prev,
-                                cur_day_val: cur,
-                                change: change
-                            });
-                        }
-                    } else if (j === 4 && ret[i][0].progressive4 && ret[i][1].progressive4) {
-                        if (!isNaN(ret[i][1].progressive4) && !isNaN(ret[i][0].progressive4)) {
-                            let prev = +ret[i][1].progressive4;
-                            let cur = +ret[i][0].progressive4;
-                            let change = cur - prev;
-                            out.push({ 
-                                location: ret[i][0].location,
-                                machine_id: ret[i][0].machine_id,
-                                prog_name: 'Major',
-                                base: 10000,
-                                increment: 0.5,
-                                prev_day_val: prev,
-                                cur_day_val: cur,
-                                change: change
-                            });
-                        }
-                    } else if (j === 5 && ret[i][0].progressive5 && ret[i][1].progressive5) {
-                        if (!isNaN(ret[i][1].progressive5) && !isNaN(ret[i][0].progressive5)) {
-                            let prev = +ret[i][1].progressive5;
-                            let cur = +ret[i][0].progressive5;
-                            let change = cur - prev;
-                            out.push({ 
-                                location: ret[i][0].location,
-                                machine_id: ret[i][0].machine_id,
-                                prog_name: 'Major',
-                                base: 10000,
-                                increment: 0.5,
-                                prev_day_val: prev,
-                                cur_day_val: cur,
-                                change: change
-                            });
-                        }
-                    } else if (j === 6 && ret[i][0].progressive6 && ret[i][1].progressive6) {
-                        if (!isNaN(ret[i][1].progressive6) && !isNaN(ret[i][0].progressive6)) {
-                            let prev = +ret[i][1].progressive6;
-                            let cur = +ret[i][0].progressive6;
-                            let change = cur - prev;
-                            out.push({ 
-                                location: ret[i][0].location,
-                                machine_id: ret[i][0].machine_id,
-                                prog_name: 'Major',
-                                base: 10000,
-                                increment: 0.5,
-                                prev_day_val: prev,
-                                cur_day_val: cur,
-                                change: change
-                            });
-                        }
-                    } else if (j === 7 && ret[i][0].progressive7 && ret[i][1].progressive7) {
-                        if (!isNaN(ret[i][1].progressive7) && !isNaN(ret[i][0].progressive7)) {
-                            let prev = +ret[i][1].progressive7;
-                            let cur = +ret[i][0].progressive7;
-                            let change = cur - prev;
-                            out.push({ 
-                                location: ret[i][0].location,
-                                machine_id: ret[i][0].machine_id,
-                                prog_name: 'Major',
-                                base: 10000,
-                                increment: 0.5,
-                                prev_day_val: prev,
-                                cur_day_val: cur,
-                                change: change
-                            });
-                        }
-                    } else if (j === 8 && ret[i][0].progressive8 && ret[i][1].progressive8) {
-                        if (!isNaN(ret[i][1].progressive8) && !isNaN(ret[i][0].progressive8)) {
-                            let prev = +ret[i][1].progressive8;
-                            let cur = +ret[i][0].progressive8;
-                            let change = cur - prev;
-                            out.push({ 
-                                location: ret[i][0].location,
-                                machine_id: ret[i][0].machine_id,
-                                prog_name: 'Major',
-                                base: 10000,
-                                increment: 0.5,
-                                prev_day_val: prev,
-                                cur_day_val: cur,
-                                change: change
-                            });
-                        }
-                    } else if (j === 9 && ret[i][0].progressive9 && ret[i][1].progressive9) {
-                        if (!isNaN(ret[i][1].progressive9) && !isNaN(ret[i][0].progressive9)) {
-                            let prev = +ret[i][1].progressive9;
-                            let cur = +ret[i][0].progressive9;
-                            let change = cur - prev;
-                            out.push({ 
-                                location: ret[i][0].location,
-                                machine_id: ret[i][0].machine_id,
-                                prog_name: 'Major',
-                                base: 10000,
-                                increment: 0.5,
-                                prev_day_val: prev,
-                                cur_day_val: cur,
-                                change: change
-                            });
-                        }
-                    } else if (j === 10 && ret[i][0].progressive10 && ret[i][1].progressive10) {
-                        if (!isNaN(ret[i][1].progressive10) && !isNaN(ret[i][0].progressive10)) {
-                            let prev = +ret[i][1].progressive10;
-                            let cur = +ret[i][0].progressive10;
-                            let change = cur - prev;
-                            out.push({ 
-                                location: ret[i][0].location,
-                                machine_id: ret[i][0].machine_id,
-                                prog_name: 'Major',
-                                base: 10000,
-                                increment: 0.5,
-                                prev_day_val: prev,
-                                cur_day_val: cur,
-                                change: change
-                            });
-                        }
-                    }
-                }
+        let comparisons = ret.map(this.compare);
+        var merged = [].concat.apply([], comparisons); // Flatten array of array pairs
+        return merged;
+    }
+
+    // Pair is an array with two elements: [curDoc, prevDoc]
+    compare(pair) {
+        let ret = [];
+        let curProgressives = [pair[0].progressive1, pair[0].progressive2, pair[0].progressive3, pair[0].progressive4, pair[0].progressive5, pair[0].progressive6, pair[0].progressive7, pair[0].progressive8, pair[0].progressive9, pair[0].progressive10];
+        let prevProgressives = [pair[1].progressive1, pair[1].progressive2, pair[1].progressive3, pair[1].progressive4, pair[1].progressive5, pair[1].progressive6, pair[1].progressive7, pair[1].progressive8, pair[1].progressive9, pair[1].progressive10];
+        let bases = [pair[0].base1, pair[0].base2, pair[0].base3, pair[0].base4, pair[0].base5, pair[0].base6, pair[0].base7, pair[0].base8, pair[0].base9, pair[0].base10];
+        let increments = [pair[0].increment1, pair[0].increment2, pair[0].increment3, pair[0].increment4, pair[0].increment5, pair[0].increment6, pair[0].increment7, pair[0].increment8, pair[0].increment9, pair[0].increment10];
+        for (let i = 0; i < 10; i++) {
+            let cur = +curProgressives[i];
+            let prev = +prevProgressives[i];
+            let base = +bases[i];
+            let increment = +increments[i];
+            let change = cur - prev;
+            let overflow = change > (base * increment * 0.01); // Convert % to decimal
+            if (!isNaN(cur) && !isNaN(prev) && !isNaN(base) && !isNaN(increment)) {
+                ret.push({
+                    location: pair[0].location,
+                    machine_id: pair[0].machine_id,
+                    //prog_name: 'Major',
+                    base: base,
+                    increment: increment,
+                    cur_day_val: cur,
+                    prev_day_val: prev,
+                    change: change,
+                    overflow: overflow,
+                });
             }
         }
-
-        // out is an array of objects like:
-        // [ {location: ..., machine_id: ..., ..., change: ...}, {...} ]
-        return out;
+        return ret;
     }
 }
 
