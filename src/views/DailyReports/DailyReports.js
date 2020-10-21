@@ -7,6 +7,9 @@ import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/picker
 import MaterialTable from 'material-table';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import Tooltip from '@material-ui/core/Tooltip';
+import Chip from '@material-ui/core/Chip';
+import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
+import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import firebase from '../../firebase/firebase';
 
 const styles = (theme) => ({
@@ -182,7 +185,7 @@ class DailyReports extends Component {
                     >
                         <Card>
                             <MaterialTable
-                                //title="Demo Title"
+                                title="Daily Change"
                                 columns={[
                                     { title: 'Location', field: 'location' },
                                     { title: 'Machine ID', field: 'machine_id' },
@@ -191,7 +194,14 @@ class DailyReports extends Component {
                                     { title: 'Increment', field: 'increment', type: 'numeric' },
                                     { title: this.convertDateToString(this.calculatePreviousDate(this.state.queryDate)), field: 'prev_day_val', type: 'numeric' },
                                     { title: this.convertDateToString(this.state.queryDate), field: 'cur_day_val', type: 'numeric' },
-                                    { title: 'Change', field: 'change', type: 'numeric' }
+                                    { title: 'Change', field: 'change', type: 'numeric', render: rowData => {
+                                            if (rowData.change >= 0) {
+                                                return <Chip icon={<ArrowUpwardIcon/>} variant="outlined" color="secondary" label={rowData.change} />;
+                                            } else {
+                                                return <Chip icon={<ArrowDownwardIcon/>} variant="outlined" color="primary" label={rowData.change} />;
+                                            }
+                                        }
+                                    }
                                 ]}
                                 data={this.state.data}
                                 /*data={[
@@ -201,8 +211,9 @@ class DailyReports extends Component {
                                     { location: 'EC1003', machine_id: '1235', prog_name: 'Mini', base: 880 , increment: 0.25, prev_day_val: 1061.00, cur_day_val: 1068.00 , change: 7 },
                                 ]}*/
                                 options={{
+                                    exportButton: true,
                                     pageSize: 10,
-                                    toolbar: false,
+                                    //toolbar: false,
                                     search: false,
                                     rowStyle: {
                                         fontSize: 14,
