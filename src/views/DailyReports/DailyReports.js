@@ -1,7 +1,7 @@
 import 'date-fns';
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import { Container, Grid, Card, CardContent, Typography } from '@material-ui/core';
+import { Container, Grid, Card, CardContent, Typography, Switch } from '@material-ui/core';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import MaterialTable from 'material-table';
@@ -37,8 +37,9 @@ class DailyReports extends Component {
         if (!firebase.getCurrentUser()) {
             props.history.replace('/signin');
         }
-        this.state = { data: [], overflowCount: 0, totalChange: 0, totalScans: 0, queryDate: new Date(), loading: true };
+        this.state = { allData: [], filteredData: [], presentableData: [], overflowCount: 0, totalChange: 0, totalScans: 0, queryDate: new Date(), loading: true, displayExceptionsOnly: false };
         this.handleDateChange = this.handleDateChange.bind(this);
+        this.filterAllorExceptionScans = this.filterAllorExceptionScans.bind(this);
         this.handleDateChange(new Date()); // Initially query from current date
     }
 
@@ -50,16 +51,33 @@ class DailyReports extends Component {
         let day = dateObject.getDate();
         let hours = resetTime.getHours();
         let minutes = resetTime.getMinutes();
-        let data = await firebase.getDocsOnDate(year, month, day, hours, minutes);
+        let allData = await firebase.getDocsOnDate(year, month, day, hours, minutes);
         let sum = 0;
         let overflowcount = 0;
-        data.forEach(function(item) {
+
+        let filteredData = [];
+        allData.forEach(function(item) {
             sum += item.change;
             if (item.overflow) {
+                filteredData.push(item);
                 overflowcount++;
             }
         });
-        this.setState({ data: data, overflowCount: overflowcount, totalChange: sum, totalScans: data.length, queryDate: dateObject, loading: false });
+
+        if (this.state.displayExceptionsOnly) {
+            this.setState({ allData: allData, filteredData: filteredData, presentableData: filteredData, overflowCount: overflowcount, totalChange: sum, totalScans: allData.length, queryDate: dateObject, loading: false });
+        } else {
+            this.setState({ allData: allData, filteredData: filteredData, presentableData: allData, overflowCount: overflowcount, totalChange: sum, totalScans: allData.length, queryDate: dateObject, loading: false });
+        }
+    }
+
+    filterAllorExceptionScans(event) {
+        let checked = event.target.checked; // Show only exceptions
+        if (checked) {
+            this.setState({ presentableData: this.state.filteredData, displayExceptionsOnly: checked });
+        } else {
+            this.setState({ presentableData: this.state.allData, displayExceptionsOnly: checked });
+        }
     }
 
     // Returns date string in MM/DD/YYYY format
@@ -87,12 +105,11 @@ class DailyReports extends Component {
                     container
                     spacing={3}
                 >
-                    
                     <Grid
                         item
-                        lg={3}
-                        sm={6}
                         xl={3}
+                        lg={3}
+                        sm={12}
                         xs={12}
                     >
                         <Card style={{ height: '100%' }}>
@@ -103,7 +120,7 @@ class DailyReports extends Component {
                                     justify="space-between"
                                     alignItems="flex-start"
                                     spacing={3}
-                                    >
+                                >
                                     <Grid item>
                                         <Typography color="textSecondary" gutterBottom variant="h6">REPORT DATE</Typography>
                                     </Grid>
@@ -133,9 +150,9 @@ class DailyReports extends Component {
                     </Grid>
                     <Grid
                         item
-                        lg={3}
-                        sm={6}
-                        xl={3}
+                        xl={2}
+                        lg={2}
+                        sm={12}
                         xs={12}
                     >
                         <Card style={{ height: '100%' }}>
@@ -148,9 +165,9 @@ class DailyReports extends Component {
                     </Grid>
                     <Grid
                         item
-                        lg={3}
-                        sm={6}
-                        xl={3}
+                        xl={2}
+                        lg={2}
+                        sm={12}
                         xs={12}
                     >
                         <Card style={{ height: '100%' }}>
@@ -162,9 +179,9 @@ class DailyReports extends Component {
                     </Grid>
                     <Grid
                         item
-                        lg={3}
-                        sm={6}
-                        xl={3}
+                        xl={2}
+                        lg={2}
+                        sm={12}
                         xs={12}
                     >
                         <Card style={{ height: '100%' }}>
@@ -172,6 +189,22 @@ class DailyReports extends Component {
                                 <Typography color="textSecondary" gutterBottom variant="h6">TOTAL CHANGE</Typography>
                                 <Typography color="textPrimary" variant="h3">{this.state.loading ? '-' : this.state.totalChange}</Typography>
                                 <Typography color="textSecondary" variant="caption">{this.state.loading ? '' : 'Compared to the previous day'}</Typography>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+
+                    <Grid
+                        item
+                        xl={3}
+                        lg={3}
+                        sm={12}
+                        xs={12}
+                    >
+                        <Card style={{ height: '100%' }}>
+                            <CardContent>
+                                <Typography color="textSecondary" gutterBottom variant="h6">FILTER RESULTS</Typography>
+                                <Switch checked={this.state.displayExceptionsOnly} onChange={this.filterAllorExceptionScans} label="Chip 1" color="secondary" style={{marginRight: 5}}/>
+                                <Typography>Only display results over and under the metrics provided in settings</Typography>
                             </CardContent>
                         </Card>
                     </Grid>
@@ -191,21 +224,21 @@ class DailyReports extends Component {
                                     { title: 'Machine ID', field: 'machine_id' },
                                     //{ title: 'Description', field: 'prog_name' },
                                     { title: 'Base', field: 'base', type: 'numeric' },
-                                    { title: 'Increment', field: 'increment', type: 'numeric' },
-                                    { title: this.convertDateToString(this.calculatePreviousDate(this.state.queryDate)), field: 'prev_day_val', type: 'numeric' },
-                                    { title: this.convertDateToString(this.state.queryDate), field: 'cur_day_val', type: 'numeric' },
+                                    { title: 'Increment %', field: 'increment', type: 'numeric' },
+                                    { title: this.convertDateToString(this.calculatePreviousDate(this.state.queryDate)), field: 'prev_day_val' },
+                                    { title: this.convertDateToString(this.state.queryDate), field: 'cur_day_val' },
                                     { title: 'Change', field: 'change', type: 'numeric', render: rowData => {
                                             if (rowData.change >= 0) {
-                                                return <Chip icon={<ArrowUpwardIcon/>} variant="outlined" color="secondary" label={rowData.change} />;
+                                                return <Chip icon={<ArrowUpwardIcon/>} variant="outlined" color="secondary" label={rowData.change + '%'} />;
                                             } else {
-                                                return <Chip icon={<ArrowDownwardIcon/>} variant="outlined" color="primary" label={rowData.change} />;
+                                                return <Chip icon={<ArrowDownwardIcon/>} variant="outlined" color="primary" label={rowData.change + '%'} />;
                                             }
                                         }
                                     }
                                 ]}
-                                data={this.state.data}
+                                data={this.state.presentableData}
                                 /*data={[
-                                    { location: 'EC0701-0704', machine_id: '1234', prog_name: 'Major', base: 10000 , increment: 0.5, prev_day_val: 12942.00, cur_day_val: 13004.00 , change: 62 },
+                                    { location: 'EC0701-0704', machine_id: '1234', prog_name: 'Major', base: 10000 , increment: 0.5, prev_day_val: 12942.00, cur_day_val: 13004.00 , change: 62, hidden: true },
                                     { location: 'EC0701-0704', machine_id: '1234', prog_name: 'Minor', base: 800 , increment: 0.1, prev_day_val: 1095.00, cur_day_val: 883.00 , change: -212 },
                                     { location: 'EC1003', machine_id: '1235', prog_name: 'Grand', base: 8800 , increment: 0.75, prev_day_val: 8817.00, cur_day_val: 8818.00 , change: 1 },
                                     { location: 'EC1003', machine_id: '1235', prog_name: 'Mini', base: 880 , increment: 0.25, prev_day_val: 1061.00, cur_day_val: 1068.00 , change: 7 },
@@ -213,7 +246,6 @@ class DailyReports extends Component {
                                 options={{
                                     exportButton: true,
                                     pageSize: 10,
-                                    //toolbar: false,
                                     search: false,
                                     rowStyle: {
                                         fontSize: 14,

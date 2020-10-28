@@ -8,6 +8,7 @@ import {
   CardActions,
   Grid,
   Divider,
+  Button,
   TextField
 } from '@material-ui/core';
 import { MuiPickersUtilsProvider, KeyboardTimePicker } from '@material-ui/pickers';
@@ -38,16 +39,20 @@ class Notifications extends Component {
     let user = firebase.getCurrentUser();
     let name = user.displayName;
     let email = user.email;
-    this.state = { name: name, email: email, loading: true, displayResets: false, resetTime: null };
+    this.state = { name: name, email: email, loading: true, displayResets: false, resetTime: null, upperThreshold: null, lowerThreshold: null, changesPending: false };
     this.handleToggleSwitch = this.handleToggleSwitch.bind(this);
     this.handleResetDateChange = this.handleResetDateChange.bind(this);
+    this.handleUpperThresholdChange = this.handleUpperThresholdChange.bind(this);
+    this.handleLowerThresholdChange = this.handleLowerThresholdChange.bind(this);
+    this.saveChanges = this.saveChanges.bind(this);
   }
 
   async componentDidMount() {
     let displayResets = await firebase.getDisplayResetValues();
     let resetTime = await firebase.getResetTime();
-    //console.log(resetTime);
-    this.setState({ displayResets: displayResets, resetTime: resetTime, loading: false });
+    let upperThreshold = await firebase.getUpperThreshold();
+    let lowerThreshold = await firebase.getLowerThreshold();
+    this.setState({ displayResets: displayResets, resetTime: resetTime, upperThreshold: upperThreshold, lowerThreshold: lowerThreshold, loading: false });
   }
 
   handleToggleSwitch(event) {
@@ -57,10 +62,21 @@ class Notifications extends Component {
 
   handleResetDateChange(date) {
     var dateObject = new Date(date);
-    //console.log(dateObject.getHours() + ":" + dateObject.getMinutes());
     this.setState({resetTime: dateObject});
-    // Write to DB
     firebase.setResetTime(dateObject);
+  }
+
+  handleUpperThresholdChange(event) {
+    this.setState({ changesPending: true, upperThreshold: event.target.value });
+  }
+
+  handleLowerThresholdChange(event) {
+    this.setState({ changesPending: true, lowerThreshold: event.target.value });
+  }
+
+  saveChanges(event) {
+    firebase.setUpperThreshold(+this.state.upperThreshold);
+    firebase.setLowerThreshold(+this.state.lowerThreshold);
   }
 
   render() {
@@ -76,7 +92,8 @@ class Notifications extends Component {
           <CardContent>
             <Grid>
             <Grid><TextField label="Casino/Account Name" variant="outlined" value={this.state.name}></TextField></Grid>
-            <Grid><TextField label="Account Email" variant="outlined" style={{ marginTop: '1rem' }} value={this.state.email}></TextField></Grid>
+            <Grid><TextField label="Account Email" variant="outlined" style={{ marginTop: '1rem', marginBottom: '1rem' }} value={this.state.email}></TextField></Grid>
+            <hr/>
             <Grid className={classes.switch}><Switch checked={this.state.displayResets} disabled={this.state.loading} onChange={this.handleToggleSwitch} inputProps={{ 'aria-label': 'primary checkbox' }}/><Typography className={classes.switchText}>Include reset values in report downloads</Typography></Grid>
             <Grid>
               <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -91,16 +108,21 @@ class Notifications extends Component {
                   }}
                 />
               </MuiPickersUtilsProvider>
-              </Grid>
+            </Grid>
+            <Grid><TextField InputLabelProps={{ shrink: true }} label="Upper Threshold" variant="outlined" style={{ marginTop: '1rem' }} value={this.state.upperThreshold || ""} onChange={this.handleUpperThresholdChange} type="number" disabled={this.state.loading}></TextField></Grid>
+            <Grid><TextField InputLabelProps={{ shrink: true }} label="Lower Threshold" variant="outlined" style={{ marginTop: '1rem' }} value={this.state.lowerThreshold || ""} onChange={this.handleLowerThresholdChange} type="number" disabled={this.state.loading}></TextField></Grid>
             </Grid>
           </CardContent>
+          <Divider />
           <CardActions>
-            {/*<Button
+            <Button
               color="primary"
               variant="outlined"
+              disabled={!this.state.changesPending}
+              onClick={this.saveChanges}
             >
               Save
-            </Button>*/}
+            </Button>
           </CardActions>
         {/*<form>
           <CardHeader

@@ -334,6 +334,40 @@ class Firebase {
         this.db.collection('users').doc(this.auth.currentUser.uid).update({ resetTime: time });
     }
 
+    getUpperThreshold() {
+        let doc = this.db.collection('users').doc(this.auth.currentUser.uid);
+        let ret = 0;
+        return doc.get().then(function(doc) {
+            if (doc.exists && 'upperThreshold' in doc.data()) {
+                return doc.data().upperThreshold;
+            }
+            return ret;
+        }).catch(function(error) {
+            return ret;
+        });
+    }
+
+    setUpperThreshold(threshold) {
+        this.db.collection('users').doc(this.auth.currentUser.uid).update({ upperThreshold: threshold });
+    }
+
+    getLowerThreshold() {
+        let doc = this.db.collection('users').doc(this.auth.currentUser.uid);
+        let ret = 0;
+        return doc.get().then(function(doc) {
+            if (doc.exists && 'lowerThreshold' in doc.data()) {
+                return doc.data().lowerThreshold;
+            }
+            return ret;
+        }).catch(function(error) {
+            return ret;
+        });
+    }
+
+    setLowerThreshold(threshold) {
+        this.db.collection('users').doc(this.auth.currentUser.uid).update({ lowerThreshold: threshold });
+    }
+
     async getDocsOnDate(year, month, day, resetHours, resetMinutes) {
         // First calculate current day
         let startDate, endDate;
@@ -367,59 +401,58 @@ class Firebase {
         // curDayScans is now an array of documents of the selected date, order by date
         // for each of these documents, we need to pair it with docs from the previous 
         // date that match the machine id.  The previous days scans are in prevDayScans
-        let ret = [];
-        let i = 0;
-        curDayScans.forEach(function(curDoc) {
-            ret.push([curDoc]);
-            prevDayScans.forEach(function(prevDoc) {
-                if (curDoc.machine_id === prevDoc.machine_id) {
-                    ret[i].push(prevDoc);
-                }
-            });
-            // Remove any elements that don't have exactly 2 elements
-            if (ret[i].length !== 2) {
-                ret[i].splice(i, 1);
-            } else {
-                i++;
-            }
-        });
-        // ret looks like [{doc, doc}, {doc, doc}, ... ,{doc, doc}] // All pairs, the first value 
-        // in each is the current day's value, and the second is the previous day's first match
 
-        let comparisons = ret.map(this.compare);
-        var merged = [].concat.apply([], comparisons); // Flatten array of array pairs
-        return merged;
+        let rett = [];
+        for (let i = 0; i < curDayScans.length; i++) {
+            for (let j = 0; j < prevDayScans.length; j++) {
+                if (curDayScans[i].machine_id === prevDayScans[j].machine_id) {
+                    let changes = this.compare(curDayScans[i], prevDayScans[j]);
+                    changes.forEach(function(change) {
+                        rett.push(change);
+                    });
+                    break;
+                }
+            }
+        }
+        console.log(rett);
+        return rett;
     }
 
     // Pair is an array with two elements: [curDoc, prevDoc]
-    compare(pair) {
+    compare(cur, prev) {
         let ret = [];
-        let curProgressives = [pair[0].progressive1, pair[0].progressive2, pair[0].progressive3, pair[0].progressive4, pair[0].progressive5, pair[0].progressive6, pair[0].progressive7, pair[0].progressive8, pair[0].progressive9, pair[0].progressive10];
-        let prevProgressives = [pair[1].progressive1, pair[1].progressive2, pair[1].progressive3, pair[1].progressive4, pair[1].progressive5, pair[1].progressive6, pair[1].progressive7, pair[1].progressive8, pair[1].progressive9, pair[1].progressive10];
-        let bases = [pair[0].base1, pair[0].base2, pair[0].base3, pair[0].base4, pair[0].base5, pair[0].base6, pair[0].base7, pair[0].base8, pair[0].base9, pair[0].base10];
-        let increments = [pair[0].increment1, pair[0].increment2, pair[0].increment3, pair[0].increment4, pair[0].increment5, pair[0].increment6, pair[0].increment7, pair[0].increment8, pair[0].increment9, pair[0].increment10];
+
+        let curProgressives = [cur.progressive1, cur.progressive2, cur.progressive3, cur.progressive4, cur.progressive5, cur.progressive6, cur.progressive7, cur.progressive8, cur.progressive9, cur.progressive10];
+        let prevProgressives = [prev.progressive1, prev.progressive2, prev.progressive3, prev.progressive4, prev.progressive5, prev.progressive6, prev.progressive7, prev.progressive8, prev.progressive9, prev.progressive10];
+        let bases = [cur.base1, cur.base2, cur.base3, cur.base4, cur.base5, cur.base6, cur.base7, cur.base8, cur.base9, cur.base10];
+        let increments = [cur.increment1, cur.increment2, cur.increment3, cur.increment4, cur.increment5, cur.increment6, cur.increment7, cur.increment8, cur.increment9, cur.increment10];
+        
         for (let i = 0; i < 10; i++) {
-            let cur = +curProgressives[i];
-            let prev = +prevProgressives[i];
+            let curVal = +curProgressives[i];
+            let prevVal = +prevProgressives[i];
             let base = +bases[i];
             let increment = +increments[i];
-            let change = cur - prev;
+            let change = this.round((curVal - prevVal) / prevVal * 100);
             let overflow = change > (base * increment * 0.01); // Convert % to decimal
-            if (!isNaN(cur) && !isNaN(prev) && !isNaN(base) && !isNaN(increment)) {
+            if (!isNaN(curVal) && !isNaN(prevVal) && !isNaN(base) && !isNaN(increment)) {
                 ret.push({
-                    location: pair[0].location,
-                    machine_id: pair[0].machine_id,
+                    location: cur.location,
+                    machine_id: cur.machine_id,
                     //prog_name: 'Major',
                     base: base,
                     increment: increment,
-                    cur_day_val: cur,
-                    prev_day_val: prev,
+                    cur_day_val: curVal,
+                    prev_day_val: prevVal,
                     change: change,
                     overflow: overflow,
                 });
             }
         }
         return ret;
+    }
+
+    round(number) {
+        return Math.round((number + Number.EPSILON) * 100) / 100;
     }
 }
 
