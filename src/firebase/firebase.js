@@ -334,7 +334,7 @@ class Firebase {
         this.db.collection('users').doc(this.auth.currentUser.uid).update({ resetTime: time });
     }
 
-    getUpperThreshold() {
+    async getUpperThreshold() {
         let doc = this.db.collection('users').doc(this.auth.currentUser.uid);
         let ret = 0;
         return doc.get().then(function(doc) {
@@ -351,7 +351,7 @@ class Firebase {
         this.db.collection('users').doc(this.auth.currentUser.uid).update({ upperThreshold: threshold });
     }
 
-    getLowerThreshold() {
+    async getLowerThreshold() {
         let doc = this.db.collection('users').doc(this.auth.currentUser.uid);
         let ret = 0;
         return doc.get().then(function(doc) {
@@ -398,42 +398,88 @@ class Firebase {
         });
         //
 
+        let lowerThreshold = await this.getLowerThreshold();
+        let upperThreshold = await this.getUpperThreshold();
+
         // curDayScans is now an array of documents of the selected date, order by date
         // for each of these documents, we need to pair it with docs from the previous 
         // date that match the machine id.  The previous days scans are in prevDayScans
 
-        let rett = [];
+        let ret = [];
+        let match;
         for (let i = 0; i < curDayScans.length; i++) {
+            match = false;
             for (let j = 0; j < prevDayScans.length; j++) {
                 if (curDayScans[i].machine_id === prevDayScans[j].machine_id) {
-                    let changes = this.compare(curDayScans[i], prevDayScans[j]);
+                    let changes = this.compare(curDayScans[i], prevDayScans[j], lowerThreshold, upperThreshold);
                     changes.forEach(function(change) {
-                        rett.push(change);
+                        ret.push(change);
                     });
+                    match = true;
                     break;
                 }
             }
+            // Add no match found
+            if (!match) {
+                let changes = this.compareNoMatch(curDayScans[i]);
+                changes.forEach(function(change) {
+                    ret.push(change);
+                });
+            }
+            //
         }
-        console.log(rett);
-        return rett;
+        //console.log(ret);
+        return ret;
+    }
+
+    compareNoMatch(cur) {
+        let ret = [];
+        let curProgressives = [cur.progressive1, cur.progressive2, cur.progressive3, cur.progressive4, cur.progressive5, cur.progressive6, cur.progressive7, cur.progressive8, cur.progressive9, cur.progressive10];
+        let bases = [cur.base1, cur.base2, cur.base3, cur.base4, cur.base5, cur.base6, cur.base7, cur.base8, cur.base9, cur.base10];
+        let increments = [cur.increment1, cur.increment2, cur.increment3, cur.increment4, cur.increment5, cur.increment6, cur.increment7, cur.increment8, cur.increment9, cur.increment10];
+
+        for (let i = 0; i < 10; i++) {
+            let curVal = +curProgressives[i];
+            let base = +bases[i];
+            let increment = +increments[i];
+            let change = "-";
+            let underflow = false;
+            let exception = false;
+            if (!isNaN(curVal) && !isNaN(base) && !isNaN(increment)) {
+                ret.push({
+                    location: cur.location,
+                    machine_id: cur.machine_id,
+                    //prog_name: 'Major',
+                    base: base,
+                    increment: increment,
+                    cur_day_val: curVal,
+                    prev_day_val: "-",
+                    change: change,
+                    underflow: underflow,
+                    exception: exception,
+                });
+            }
+        }
+        return ret;
     }
 
     // Pair is an array with two elements: [curDoc, prevDoc]
-    compare(cur, prev) {
+    compare(cur, prev, lowerThreshold, upperThreshold) {
         let ret = [];
 
         let curProgressives = [cur.progressive1, cur.progressive2, cur.progressive3, cur.progressive4, cur.progressive5, cur.progressive6, cur.progressive7, cur.progressive8, cur.progressive9, cur.progressive10];
         let prevProgressives = [prev.progressive1, prev.progressive2, prev.progressive3, prev.progressive4, prev.progressive5, prev.progressive6, prev.progressive7, prev.progressive8, prev.progressive9, prev.progressive10];
         let bases = [cur.base1, cur.base2, cur.base3, cur.base4, cur.base5, cur.base6, cur.base7, cur.base8, cur.base9, cur.base10];
         let increments = [cur.increment1, cur.increment2, cur.increment3, cur.increment4, cur.increment5, cur.increment6, cur.increment7, cur.increment8, cur.increment9, cur.increment10];
-        
+
         for (let i = 0; i < 10; i++) {
             let curVal = +curProgressives[i];
             let prevVal = +prevProgressives[i];
             let base = +bases[i];
             let increment = +increments[i];
             let change = this.round((curVal - prevVal) / prevVal * 100);
-            let overflow = change > (base * increment * 0.01); // Convert % to decimal
+            let exception = ((curVal - prevVal) <= (base * increment * 0.01 - lowerThreshold)) || ((curVal - prevVal) >= (base * increment * 0.01 + upperThreshold)); // Convert % to decimal
+            let underflow = (curVal - prevVal) <= (base * increment * 0.01);
             if (!isNaN(curVal) && !isNaN(prevVal) && !isNaN(base) && !isNaN(increment)) {
                 ret.push({
                     location: cur.location,
@@ -444,7 +490,8 @@ class Firebase {
                     cur_day_val: curVal,
                     prev_day_val: prevVal,
                     change: change,
-                    overflow: overflow,
+                    underflow: underflow,
+                    exception: exception,
                 });
             }
         }

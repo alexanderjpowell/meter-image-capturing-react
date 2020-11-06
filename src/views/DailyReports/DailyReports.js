@@ -37,7 +37,7 @@ class DailyReports extends Component {
         if (!firebase.getCurrentUser()) {
             props.history.replace('/signin');
         }
-        this.state = { allData: [], filteredData: [], presentableData: [], overflowCount: 0, totalChange: 0, totalScans: 0, queryDate: new Date(), loading: true, displayExceptionsOnly: false };
+        this.state = { allData: [], filteredData: [], presentableData: [], underflowCount: 0, totalChange: 0, totalScans: 0, queryDate: new Date(), loading: true, displayExceptionsOnly: false };
         this.handleDateChange = this.handleDateChange.bind(this);
         this.filterAllorExceptionScans = this.filterAllorExceptionScans.bind(this);
         this.handleDateChange(new Date()); // Initially query from current date
@@ -53,27 +53,27 @@ class DailyReports extends Component {
         let minutes = resetTime.getMinutes();
         let allData = await firebase.getDocsOnDate(year, month, day, hours, minutes);
         let sum = 0;
-        let overflowcount = 0;
+        let underflowcount = 0;
 
         let filteredData = [];
         allData.forEach(function(item) {
             sum += item.change;
-            if (item.overflow) {
+            if (item.exception) {
                 filteredData.push(item);
-                overflowcount++;
+                underflowcount++;
             }
         });
 
         if (this.state.displayExceptionsOnly) {
-            this.setState({ allData: allData, filteredData: filteredData, presentableData: filteredData, overflowCount: overflowcount, totalChange: sum, totalScans: allData.length, queryDate: dateObject, loading: false });
+            this.setState({ allData: allData, filteredData: filteredData, presentableData: filteredData, underflowCount: underflowcount, totalChange: sum, totalScans: allData.length, queryDate: dateObject, loading: false });
         } else {
-            this.setState({ allData: allData, filteredData: filteredData, presentableData: allData, overflowCount: overflowcount, totalChange: sum, totalScans: allData.length, queryDate: dateObject, loading: false });
+            this.setState({ allData: allData, filteredData: filteredData, presentableData: allData, underflowCount: underflowcount, totalChange: sum, totalScans: allData.length, queryDate: dateObject, loading: false });
         }
     }
 
     filterAllorExceptionScans(event) {
-        let checked = event.target.checked; // Show only exceptions
-        if (checked) {
+        let checked = event.target.checked;
+        if (checked) { // Show only exceptions
             this.setState({ presentableData: this.state.filteredData, displayExceptionsOnly: checked });
         } else {
             this.setState({ presentableData: this.state.allData, displayExceptionsOnly: checked });
@@ -95,9 +95,9 @@ class DailyReports extends Component {
         const { classes } = this.props;
         const tooltipMessage = 'Please set the progressive reset time in the settings tab.  Querying a specific date will fetch all records in a 24 hour window starting at the reset time on the date in question. ';
 
-        var percentOver = (this.state.overflowCount / this.state.totalScans) * 100;
-        if (isNaN(percentOver)) {
-            percentOver = 0;
+        var percentUnder = (this.state.underflowCount / this.state.totalScans) * 100;
+        if (isNaN(percentUnder)) {
+            percentUnder = 0;
         }
         return (
             <Container className={classes.root} maxWidth={false}>
@@ -157,9 +157,9 @@ class DailyReports extends Component {
                     >
                         <Card style={{ height: '100%' }}>
                             <CardContent>
-                                <Typography color="textSecondary" gutterBottom variant="h6">PERCENT OVER</Typography>
-                                <Typography color="textPrimary" variant="h3">{this.state.loading ? '-' : percentOver + '%'}</Typography>
-                                <Typography color="textSecondary" variant="caption">{this.state.loading ? '' : this.state.overflowCount + ' / ' + this.state.totalScans + ' scans over quota'}</Typography>
+                                <Typography color="textSecondary" gutterBottom variant="h6">PERCENT UNDER</Typography>
+                                <Typography color="textPrimary" variant="h3">{this.state.loading ? '-' : percentUnder + '%'}</Typography>
+                                <Typography color="textSecondary" variant="caption">{this.state.loading ? '' : this.state.underflowCount + ' / ' + this.state.totalScans + ' scans under quota'}</Typography>
                             </CardContent>
                         </Card>
                     </Grid>
@@ -187,7 +187,7 @@ class DailyReports extends Component {
                         <Card style={{ height: '100%' }}>
                             <CardContent>
                                 <Typography color="textSecondary" gutterBottom variant="h6">TOTAL CHANGE</Typography>
-                                <Typography color="textPrimary" variant="h3">{this.state.loading ? '-' : this.state.totalChange}</Typography>
+                                <Typography color="textPrimary" variant="h3">{this.state.loading ? '-' : firebase.round(this.state.totalChange)}</Typography>
                                 <Typography color="textSecondary" variant="caption">{this.state.loading ? '' : 'Compared to the previous day'}</Typography>
                             </CardContent>
                         </Card>
