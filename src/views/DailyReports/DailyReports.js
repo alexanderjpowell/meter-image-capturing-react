@@ -54,7 +54,6 @@ class DailyReports extends Component {
         let allData = await firebase.getDocsOnDate(year, month, day, hours, minutes);
         let sum = 0;
         let underflowcount = 0;
-
         let filteredData = [];
         allData.forEach(function(item) {
             sum += item.change;
@@ -157,9 +156,9 @@ class DailyReports extends Component {
                     >
                         <Card style={{ height: '100%' }}>
                             <CardContent>
-                                <Typography color="textSecondary" gutterBottom variant="h6">PERCENT UNDER</Typography>
+                                <Typography color="textSecondary" gutterBottom variant="h6">PERCENT EXCEPTION</Typography>
                                 <Typography color="textPrimary" variant="h3">{this.state.loading ? '-' : percentUnder + '%'}</Typography>
-                                <Typography color="textSecondary" variant="caption">{this.state.loading ? '' : this.state.underflowCount + ' / ' + this.state.totalScans + ' scans under quota'}</Typography>
+                                <Typography color="textSecondary" variant="caption">{this.state.loading ? '' : this.state.underflowCount + ' / ' + this.state.totalScans + ' scans fall outside the range set for exceptions'}</Typography>
                             </CardContent>
                         </Card>
                     </Grid>
@@ -187,7 +186,7 @@ class DailyReports extends Component {
                         <Card style={{ height: '100%' }}>
                             <CardContent>
                                 <Typography color="textSecondary" gutterBottom variant="h6">TOTAL CHANGE</Typography>
-                                <Typography color="textPrimary" variant="h3">{this.state.loading ? '-' : firebase.round(this.state.totalChange)}</Typography>
+                                <Typography color="textPrimary" variant="h3">{this.state.loading ? '-' : firebase.round(this.state.totalChange)}%</Typography>
                                 <Typography color="textSecondary" variant="caption">{this.state.loading ? '' : 'Compared to the previous day'}</Typography>
                             </CardContent>
                         </Card>
@@ -222,8 +221,12 @@ class DailyReports extends Component {
                                 columns={[
                                     { title: 'Location', field: 'location' },
                                     { title: 'Machine ID', field: 'machine_id' },
+                                    { field: 'progressive_index', render: rowData => {
+                                            return <Chip variant="outlined" label={'Progressive ' + rowData.progressive_index}/>
+                                        }
+                                    },
                                     //{ title: 'Description', field: 'prog_name' },
-                                    { title: 'Base', field: 'base', type: 'numeric' },
+                                    { title: 'Base', field: 'base' },
                                     { title: 'Increment %', field: 'increment', type: 'numeric' },
                                     { title: this.convertDateToString(this.calculatePreviousDate(this.state.queryDate)), field: 'prev_day_val' },
                                     { title: this.convertDateToString(this.state.queryDate), field: 'cur_day_val' },

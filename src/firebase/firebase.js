@@ -348,7 +348,7 @@ class Firebase {
     }
 
     setUpperThreshold(threshold) {
-        this.db.collection('users').doc(this.auth.currentUser.uid).update({ upperThreshold: threshold });
+        this.db.collection('users').doc(this.auth.currentUser.uid).set({ upperThreshold: threshold }, { merge: true });
     }
 
     async getLowerThreshold() {
@@ -365,7 +365,7 @@ class Firebase {
     }
 
     setLowerThreshold(threshold) {
-        this.db.collection('users').doc(this.auth.currentUser.uid).update({ lowerThreshold: threshold });
+        this.db.collection('users').doc(this.auth.currentUser.uid).set({ lowerThreshold: threshold }, { merge: true });
     }
 
     async getDocsOnDate(year, month, day, resetHours, resetMinutes) {
@@ -443,7 +443,7 @@ class Firebase {
             let base = +bases[i];
             let increment = +increments[i];
             let change = "-";
-            let underflow = false;
+            //let underflow = false;
             let exception = false;
             if (!isNaN(curVal) && !isNaN(base) && !isNaN(increment)) {
                 ret.push({
@@ -453,10 +453,11 @@ class Firebase {
                     base: base,
                     increment: increment,
                     cur_day_val: curVal,
-                    prev_day_val: "-",
+                    prev_day_val: "No Match Found",
                     change: change,
-                    underflow: underflow,
+                    //underflow: underflow,
                     exception: exception,
+                    progressive_index: i + 1,
                 });
             }
         }
@@ -472,15 +473,34 @@ class Firebase {
         let bases = [cur.base1, cur.base2, cur.base3, cur.base4, cur.base5, cur.base6, cur.base7, cur.base8, cur.base9, cur.base10];
         let increments = [cur.increment1, cur.increment2, cur.increment3, cur.increment4, cur.increment5, cur.increment6, cur.increment7, cur.increment8, cur.increment9, cur.increment10];
 
+        let curVal, prevVal, base, increment, change, exception;
         for (let i = 0; i < 10; i++) {
-            let curVal = +curProgressives[i];
-            let prevVal = +prevProgressives[i];
-            let base = +bases[i];
-            let increment = +increments[i];
-            let change = this.round((curVal - prevVal) / prevVal * 100);
-            let exception = ((curVal - prevVal) <= (base * increment * 0.01 - lowerThreshold)) || ((curVal - prevVal) >= (base * increment * 0.01 + upperThreshold)); // Convert % to decimal
-            let underflow = (curVal - prevVal) <= (base * increment * 0.01);
-            if (!isNaN(curVal) && !isNaN(prevVal) && !isNaN(base) && !isNaN(increment)) {
+            if (curProgressives[i] === "" || isNaN(curProgressives[i]) || prevProgressives[i] === "" || isNaN(prevProgressives[i])) {
+                continue;
+            }
+            curVal = +curProgressives[i];
+            prevVal = +prevProgressives[i];
+            if (bases[i] === undefined) {
+                base = "-";
+            } else {
+                base = bases[i];
+            }
+            if (increments[i] === undefined) {
+                increment = "-";
+            } else {
+                increment = increments[i];
+            }
+            change = this.round((curVal - prevVal) / prevVal * 100);
+            exception = false;
+            if (change >= 0) {
+                exception = change >= upperThreshold;
+            } else {
+                exception = Math.abs(change) >= lowerThreshold;
+            }
+            //let exception = ((curVal - prevVal) <= (base * increment * 0.01 - lowerThreshold)) || ((curVal - prevVal) >= (base * increment * 0.01 + upperThreshold)); // Convert % to decimal
+            //let underflow = (curVal - prevVal) <= (base * increment * 0.01);
+            //if (!isNaN(curVal) && !isNaN(prevVal) && !isNaN(base) && !isNaN(increment)) {
+            if (!isNaN(curVal) && !isNaN(prevVal)) {
                 ret.push({
                     location: cur.location,
                     machine_id: cur.machine_id,
@@ -490,8 +510,9 @@ class Firebase {
                     cur_day_val: curVal,
                     prev_day_val: prevVal,
                     change: change,
-                    underflow: underflow,
+                    //underflow: underflow,
                     exception: exception,
+                    progressive_index: i + 1,
                 });
             }
         }

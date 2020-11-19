@@ -52,7 +52,7 @@ class Notifications extends Component {
     let resetTime = await firebase.getResetTime();
     let upperThreshold = await firebase.getUpperThreshold();
     let lowerThreshold = await firebase.getLowerThreshold();
-    this.setState({ displayResets: displayResets, resetTime: resetTime, upperThreshold: upperThreshold, lowerThreshold: lowerThreshold, loading: false });
+    this.setState({ displayResets: displayResets, resetTime: resetTime, upperThreshold: upperThreshold, lowerThreshold: lowerThreshold, loading: false, upperThresholdOutOfBounds: false, lowerThresholdOutOfBounds: false });
   }
 
   handleToggleSwitch(event) {
@@ -75,12 +75,24 @@ class Notifications extends Component {
   }
 
   saveChanges(event) {
+    let upperThreshold = +this.state.upperThreshold;
+    let lowerThreshold = +this.state.lowerThreshold;
+    if (upperThreshold < 0 || upperThreshold > 100) {
+      this.setState({ upperThresholdOutOfBounds: true });
+      return;
+    }
+    if (lowerThreshold < 0 || lowerThreshold > 100) {
+      this.setState({ lowerThresholdOutOfBounds: true });
+      return;
+    }
     firebase.setUpperThreshold(+this.state.upperThreshold);
     firebase.setLowerThreshold(+this.state.lowerThreshold);
+    this.setState({ upperThresholdOutOfBounds: false, lowerThresholdOutOfBounds: false });
   }
 
   render() {
     const { classes } = this.props;
+    const helperText = "Must be a percentage between 0 and 100";
 
     return (
       <Card>
@@ -109,8 +121,13 @@ class Notifications extends Component {
                 />
               </MuiPickersUtilsProvider>
             </Grid>
-            <Grid><TextField InputLabelProps={{ shrink: true }} label="Upper Threshold" variant="outlined" style={{ marginTop: '1rem' }} value={this.state.upperThreshold || ""} onChange={this.handleUpperThresholdChange} type="number" disabled={this.state.loading}></TextField></Grid>
-            <Grid><TextField InputLabelProps={{ shrink: true }} label="Lower Threshold" variant="outlined" style={{ marginTop: '1rem' }} value={this.state.lowerThreshold || ""} onChange={this.handleLowerThresholdChange} type="number" disabled={this.state.loading}></TextField></Grid>
+            <br/>
+            <hr/>
+            <br/>
+            <Typography variant="h6">Exception Thresholds</Typography>
+            <Typography>These values dictate the percentage increase and decrease that a machine's progressive needs to change by to be marked as an exception. Values are inclusive.</Typography>
+            <Grid><TextField error={this.state.upperThresholdOutOfBounds} helperText={this.state.upperThresholdOutOfBounds && helperText} InputLabelProps={{ shrink: true }} label="Percent Over" variant="outlined" style={{ marginTop: '1rem' }} value={this.state.upperThreshold || ""} onChange={this.handleUpperThresholdChange} type="number" disabled={this.state.loading}></TextField></Grid>
+            <Grid><TextField error={this.state.lowerThresholdOutOfBounds} helperText={this.state.lowerThresholdOutOfBounds && helperText} InputLabelProps={{ shrink: true }} label="Percent Under" variant="outlined" style={{ marginTop: '1rem' }} value={this.state.lowerThreshold || ""} onChange={this.handleLowerThresholdChange} type="number" disabled={this.state.loading}></TextField></Grid>
             </Grid>
           </CardContent>
           <Divider />

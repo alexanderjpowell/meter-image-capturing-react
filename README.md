@@ -10,6 +10,9 @@
 
 # Deployment Instructions
 
+- To deploy to a preview channel:
+`firebase hosting:channel:deploy daily-comparisons --expires 7d`
+
 - Create production build: `npm run build`
 - Deploy to Firebase hosting: `firebase deploy`
 
