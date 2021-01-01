@@ -11,6 +11,7 @@ class Firebase {
 		this.auth = firebase.auth();
         this.db = firebase.firestore();
         this.storage = firebase.app().storage("gs://to-do-files");
+        this.storageMonthlyReportsBucket = firebase.app().storage("gs://monthly-change-reports");
     }
 
     login(email, password) {
@@ -521,6 +522,12 @@ class Firebase {
 
     round(number) {
         return Math.round((number + Number.EPSILON) * 100) / 100;
+    }
+
+    async getMonthlyReports() {
+        var listRef = this.storageMonthlyReportsBucket.ref().child(this.getCurrentUserUid());
+        var list = await listRef.listAll();//.then(function(res) {
+        return list.items;
     }
 }
 

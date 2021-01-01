@@ -12,6 +12,7 @@ import PeopleIcon from '@material-ui/icons/People';
 import TrendingUpIcon from '@material-ui/icons/TrendingUp';
 import SettingsIcon from '@material-ui/icons/Settings';
 import DescriptionIcon from '@material-ui/icons/Description';
+import AssessmentIcon from '@material-ui/icons/Assessment';
 //import LockOpenIcon from '@material-ui/icons/LockOpen';
 import { Profile, SidebarNav } from './components';
 
@@ -63,6 +64,11 @@ const Sidebar = props => {
       title: 'Daily Change',
       href: '/analytics',
       icon: <TrendingUpIcon />
+    },
+    {
+      title: 'Monthly Reports',
+      href: '/reporting',
+      icon: <AssessmentIcon />
     },
     /*{
       title: 'Products',

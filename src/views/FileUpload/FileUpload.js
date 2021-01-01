@@ -98,7 +98,8 @@ class FileUpload extends Component {
                                     <ListItem>progressive_count (optional, between 1 and 10)</ListItem>
                                     <ListItem>user (optional)</ListItem>
                                     <ListItem>p_1, p_2, p_3, p_4, p_5, p_6, p_7, p_8, p_9, p_10 (optional)</ListItem>
-                                    <ListItem>r_1, r_2, r_3, r_4, r_5, r_6, r_7, r_8, r_9, r_10 (optional)</ListItem>
+                                    <ListItem>b_1, b_2, b_3, b_4, b_5, b_6, b_7, b_8, b_9, b_10 (optional)</ListItem>
+                                    <ListItem>i_1, i_2, i_3, i_4, i_5, i_6, i_7, i_8, i_9, i_10 (optional)</ListItem>
                                 </List>
                                 <Typography className={classes.instructions}>You can view sample files <Link href="https://raw.githubusercontent.com/alexanderjpowell/meter-image-capturing-react/master/example_upload_files/sample_number.csv" target="_blank" rel="noreferrer">here</Link>, <Link href="https://raw.githubusercontent.com/alexanderjpowell/meter-image-capturing-react/master/example_upload_files/sample_descriptions.csv" target="_blank" rel="noreferrer">here</Link>, <Link href="https://raw.githubusercontent.com/alexanderjpowell/meter-image-capturing-react/master/example_upload_files/sample_descriptions_with_users.csv" target="_blank" rel="noreferrer">here</Link> and <Link href="https://raw.githubusercontent.com/alexanderjpowell/meter-image-capturing-react/master/example_upload_files/sample_descriptions_10_progressives.csv" target="_blank" rel="noreferrer">here</Link>.</Typography>
                                 <div className={classes.paddingItem}><FileUploadButton /></div>

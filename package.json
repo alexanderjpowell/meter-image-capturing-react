@@ -41,7 +41,7 @@
     "file-saver": "^2.0.2",
     "firebase": "^7.17.1",
     "history": "^4.9.0",
-    "material-table": "^1.68.0",
+    "material-table": "^1.69.2",
     "moment": "^2.27.0",
     "node-sass": "^4.14.1",
     "prop-types": "^15.7.2",

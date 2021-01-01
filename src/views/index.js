@@ -10,3 +10,4 @@ export { default as Typography } from './Typography';
 export { default as UserList } from './UserList';
 export { default as FileUpload } from './FileUpload';
 export { default as DailyReports } from './DailyReports';
+export { default as MonthlyReports } from './MonthlyReports';

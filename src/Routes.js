@@ -16,6 +16,7 @@ import {
   NotFound as NotFoundView,
   FileUpload as FileUploadView,
   DailyReports as DailyReportsView,
+  MonthlyReports as MonthlyReportsView,
 } from './views';
 
 //const Routes = () => {
@@ -61,6 +62,12 @@ function Routes(props) {
         exact
         layout={MainLayout}
         path="/analytics"
+      />
+      <RouteWithLayout
+        component={MonthlyReportsView}
+        exact
+        layout={MainLayout}
+        path="/reporting"
       />
       {/*<RouteWithLayout
         component={ProductListView}

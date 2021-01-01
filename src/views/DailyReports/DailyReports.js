@@ -156,7 +156,7 @@ class DailyReports extends Component {
                     >
                         <Card style={{ height: '100%' }}>
                             <CardContent>
-                                <Typography color="textSecondary" gutterBottom variant="h6">PERCENT EXCEPTION</Typography>
+                                <Typography color="textSecondary" gutterBottom variant="h6">EXCEPTION PERCENTAGE</Typography>
                                 <Typography color="textPrimary" variant="h3">{this.state.loading ? '-' : percentUnder + '%'}</Typography>
                                 <Typography color="textSecondary" variant="caption">{this.state.loading ? '' : this.state.underflowCount + ' / ' + this.state.totalScans + ' scans fall outside the range set for exceptions'}</Typography>
                             </CardContent>
@@ -185,7 +185,7 @@ class DailyReports extends Component {
                     >
                         <Card style={{ height: '100%' }}>
                             <CardContent>
-                                <Typography color="textSecondary" gutterBottom variant="h6">TOTAL CHANGE</Typography>
+                                <Typography color="textSecondary" gutterBottom variant="h6">CUMULATIVE CHANGE</Typography>
                                 <Typography color="textPrimary" variant="h3">{this.state.loading ? '-' : firebase.round(this.state.totalChange)}%</Typography>
                                 <Typography color="textSecondary" variant="caption">{this.state.loading ? '' : 'Compared to the previous day'}</Typography>
                             </CardContent>
