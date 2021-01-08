@@ -375,7 +375,7 @@ class Firebase {
         startDate = new Date(year, month, day, resetHours, resetMinutes);
         endDate = new Date(new Date(startDate).getTime() + 60 * 60 * 24 * 1000); // Add 24 hours
         let scansRef = this.db.collection('users').doc(this.auth.currentUser.uid).collection('scans');
-        let query = scansRef.where('timestamp', '>=', startDate).where('timestamp', '<=', endDate).orderBy('timestamp', 'desc').limit(10);
+        let query = scansRef.where('timestamp', '>=', startDate).where('timestamp', '<=', endDate).orderBy('timestamp', 'desc');//.limit(10);
         let curDayScans = [];
         await query.get().then(function(snapshot) {
             snapshot.forEach(function(doc) {
@@ -384,11 +384,12 @@ class Firebase {
         }).catch(function(error) {
             console.log(error);
         });
+        //console.log(curDayScans);
 
         // Now calculate previous day
         startDate.setDate(startDate.getDate() - 1);
         endDate.setDate(endDate.getDate() - 1);
-        query = scansRef.where('timestamp', '>=', startDate).where('timestamp', '<=', endDate).orderBy('timestamp', 'desc').limit(10);
+        query = scansRef.where('timestamp', '>=', startDate).where('timestamp', '<=', endDate).orderBy('timestamp', 'desc');//.limit(10);
         let prevDayScans = [];
         await query.get().then(function(snapshot) {
             snapshot.forEach(function(doc) {
