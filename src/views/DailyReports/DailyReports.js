@@ -247,6 +247,7 @@ class DailyReports extends Component {
                                     { location: 'EC1003', machine_id: '1235', prog_name: 'Mini', base: 880 , increment: 0.25, prev_day_val: 1061.00, cur_day_val: 1068.00 , change: 7 },
                                 ]}*/
                                 options={{
+                                    exportAllData: true,
                                     exportButton: true,
                                     pageSize: 10,
                                     search: false,
