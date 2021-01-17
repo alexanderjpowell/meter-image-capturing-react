@@ -5,15 +5,10 @@ import { makeStyles } from '@material-ui/styles';
 import { Divider, Drawer } from '@material-ui/core';
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import PeopleIcon from '@material-ui/icons/People';
-//import ShoppingBasketIcon from '@material-ui/icons/ShoppingBasket';
-//import TextFieldsIcon from '@material-ui/icons/TextFields';
-//import ImageIcon from '@material-ui/icons/Image';
-//import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import TrendingUpIcon from '@material-ui/icons/TrendingUp';
 import SettingsIcon from '@material-ui/icons/Settings';
 import DescriptionIcon from '@material-ui/icons/Description';
 import AssessmentIcon from '@material-ui/icons/Assessment';
-//import LockOpenIcon from '@material-ui/icons/LockOpen';
 import { Profile, SidebarNav } from './components';
 
 const useStyles = makeStyles(theme => ({
@@ -46,17 +41,7 @@ const Sidebar = props => {
 
   const pages = [
     {
-      title: 'Dashboard',
-      href: '/dashboard',
-      icon: <DashboardIcon />
-    },
-    {
-      title: 'Users',
-      href: '/users',
-      icon: <PeopleIcon />
-    },
-    {
-      title: 'Report Upload',
+      title: 'Daily File Upload',
       href: '/upload',
       icon: <DescriptionIcon />
     },
@@ -66,35 +51,20 @@ const Sidebar = props => {
       icon: <TrendingUpIcon />
     },
     {
+      title: 'Scanned Data',
+      href: '/dashboard',
+      icon: <DashboardIcon />
+    },
+    {
       title: 'Monthly Reports',
       href: '/reporting',
       icon: <AssessmentIcon />
     },
-    /*{
-      title: 'Products',
-      href: '/products',
-      icon: <ShoppingBasketIcon />
-    },
     {
-      title: 'Authentication',
-      href: '/sign-in',
-      icon: <LockOpenIcon />
+      title: 'Manage Users',
+      href: '/users',
+      icon: <PeopleIcon />
     },
-    {
-      title: 'Typography',
-      href: '/typography',
-      icon: <TextFieldsIcon />
-    },
-    {
-      title: 'Icons',
-      href: '/icons',
-      icon: <ImageIcon />
-    },
-    {
-      title: 'Account',
-      href: '/account',
-      icon: <AccountBoxIcon />
-    },*/
     {
       title: 'Settings',
       href: '/settings',
@@ -120,7 +90,6 @@ const Sidebar = props => {
           className={classes.nav}
           pages={pages}
         />
-        {/*<UpgradePlan />*/}
       </div>
     </Drawer>
   );

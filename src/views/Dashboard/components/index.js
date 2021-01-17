@@ -6,5 +6,5 @@ export { default as TasksProgress } from './TasksProgress';
 export { default as TotalProfit } from './TotalProfit';
 export { default as TotalUsers } from './TotalUsers';
 export { default as UsersByDevice } from './UsersByDevice';
-export { default as DetailedExpansionPanel } from './ExpansionPanel';
+export { default as DetailedAccordion } from './DetailedAccordion';
 export { default as MaterialTableDemo } from './MaterialTable';

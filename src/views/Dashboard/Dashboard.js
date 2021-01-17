@@ -12,7 +12,7 @@ import {
   //LatestProducts,
   //LatestOrders,
   MaterialTableDemo,
-  DetailedExpansionPanel
+  DetailedAccordion
 } from './components';
 import firebase from '../../firebase/firebase';
 
@@ -64,7 +64,7 @@ class Dashboard extends Component {
           xl={9}
           xs={12}
         >
-          <DetailedExpansionPanel
+          <DetailedAccordion
             startDate={startDate}
             endDate={endDate}
             onDateRangeSearchClick={this.handleOnDateRangeSearchClick}

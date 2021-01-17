@@ -6,6 +6,7 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import MaterialTable from 'material-table';
 import Skeleton from '@material-ui/lab/Skeleton';
+import Chip from '@material-ui/core/Chip';
 //import TextField from '@material-ui/core/TextField';
 //import MenuItem from '@material-ui/core/MenuItem';
 //import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
@@ -15,46 +16,27 @@ import firebase from '../../../../firebase/firebase';
 class MaterialTableDemo extends Component {
 
   constructor(props) {
-    //alert('constructor');
     super();
     if (!firebase.getCurrentUser()) {
       props.history.replace('/signin');
       //return null;
     }
-    //alert(firebase.getCurrentUser().email);
     
     this.state = {
       columns: [
         { title: 'Machine ID', field: 'machineId', width: 150 },
-        { title: 'P1', field: 'progressive1', width: 80 },
-        { title: 'P2', field: 'progressive2', width: 80 },
-        { title: 'P3', field: 'progressive3', width: 80 },
-        { title: 'P4', field: 'progressive4', width: 80 },
-        { title: 'P5', field: 'progressive5', width: 80 },
-        { title: 'P6', field: 'progressive6', width: 80 },
-        { title: 'P7', field: 'progressive7', width: 80 },
-        { title: 'P8', field: 'progressive8', width: 80 },
-        { title: 'P9', field: 'progressive9', width: 80 },
-        { title: 'P10', field: 'progressive10', width: 80 },
-
-        /*{ title: 'R1', field: 'reset1', width: 80, hidden: true, export: true },
-        { title: 'R2', field: 'reset2', width: 80, hidden: true, export: true },
-        { title: 'R3', field: 'reset3', width: 80, hidden: true, export: true },
-        { title: 'R4', field: 'reset4', width: 80, hidden: true, export: true },
-        { title: 'R5', field: 'reset5', width: 80, hidden: true, export: true },
-        { title: 'R6', field: 'reset6', width: 80, hidden: true, export: true },
-        { title: 'R7', field: 'reset7', width: 80, hidden: true, export: true },
-        { title: 'R8', field: 'reset8', width: 80, hidden: true, export: true },
-        { title: 'R9', field: 'reset9', width: 80, hidden: true, export: true },
-        { title: 'R10', field: 'reset10', width: 80, hidden: true, export: true },*/
-
+        { field: 'progressive_index', render: rowData => {
+                return <Chip variant="outlined" label={'Progressive ' + rowData.progressive_index}/>
+            } 
+        },
+        { title: 'Progressive', field: 'progressive', width: 80 },
+        { title: 'Base', field: 'base', width: 80 },
         { title: 'Timestamp', field: 'timestamp', editable: 'false', width: 150 },
         { title: 'User', field: 'userName', editable: 'false', width: 80 },
         { title: 'Notes', field: 'notes' },
         { title: 'Location', field: 'location', width: 100 },
       ],
       data: [],
-      //emptyDataSourceMessage: 'No Results',
       open: false,
       initialLoad: true,
     };
@@ -63,152 +45,24 @@ class MaterialTableDemo extends Component {
   }
 
   async componentDidUpdate(prevProps) {
-    //alert("componentDidUpdate");
     // Custom Date Range
     if ((this.props.startDate !== prevProps.startDate) || (this.props.endDate !== prevProps.endDate)) {
-      //alert('1');
-      //alert(this.props.startDate + ' : ' + this.props.endDate);
       let scans = await firebase.queryCustomDateRange(this.props.startDate, this.props.endDate);
-      let rowData = [];
-      for (let i = 0; i < scans.length; i++) {
-        let docId = scans[i].id;
-        let machineId = scans[i].get('machine_id');
-        let progressive1 = scans[i].get('progressive1');
-        let progressive2 = scans[i].get('progressive2');
-        let progressive3 = scans[i].get('progressive3');
-        let progressive4 = scans[i].get('progressive4');
-        let progressive5 = scans[i].get('progressive5');
-        let progressive6 = scans[i].get('progressive6');
-        let progressive7 = scans[i].get('progressive7');
-        let progressive8 = scans[i].get('progressive8');
-        let progressive9 = scans[i].get('progressive9');
-        let progressive10 = scans[i].get('progressive10');
-        let reset1 = 'reset1' in scans[i] ? scans[i].get('reset1') : "";
-        let reset2 = 'reset2' in scans[i] ? scans[i].get('reset2') : "";
-        let reset3 = 'reset3' in scans[i] ? scans[i].get('reset3') : "";
-        let reset4 = 'reset4' in scans[i] ? scans[i].get('reset4') : "";
-        let reset5 = 'reset5' in scans[i] ? scans[i].get('reset5') : "";
-        let reset6 = 'reset6' in scans[i] ? scans[i].get('reset6') : "";
-        let reset7 = 'reset7' in scans[i] ? scans[i].get('reset7') : "";
-        let reset8 = 'reset8' in scans[i] ? scans[i].get('reset8') : "";
-        let reset9 = 'reset9' in scans[i] ? scans[i].get('reset9') : "";
-        let reset10 = 'reset10' in scans[i] ? scans[i].get('reset10') : "";
-        let location = scans[i].get('location');
-        let timestamp = scans[i].get('timestamp').toDate().toLocaleString();
-        let userName = scans[i].get('userName');
-        let notes = scans[i].get('notes');
-        let row = { docId: docId, machineId: machineId, progressive1: progressive1, progressive2: progressive2, progressive3: progressive3, progressive4: progressive4, progressive5: progressive5, progressive6: progressive6, progressive7: progressive7, progressive8: progressive8, progressive9: progressive9, progressive10: progressive10, reset1: reset1, reset2: reset2, reset3: reset3, reset4: reset4, reset5: reset5, reset6: reset6, reset7: reset7, reset8: reset8, reset9: reset9, reset10: reset10, location: location, timestamp: timestamp, userName: userName, notes: notes };
-        rowData.push(row);
-      }
+      let rowData = this.formatScanData(scans);
       this.setState({ data: rowData });
     }
     if (this.props.latestScansRange !== prevProps.latestScansRange) {
-      
-      //alert(this.props.latestScansRange);
       if (this.props.latestScansRange === 'hour') {
-        //alert('2');
         let scans = await firebase.queryLastHourScans();
-        let rowData = [];
-        for (let i = 0; i < scans.length; i++) {
-          let docId = scans[i].id;
-          let machineId = scans[i].get('machine_id');
-          let progressive1 = scans[i].get('progressive1');
-          let progressive2 = scans[i].get('progressive2');
-          let progressive3 = scans[i].get('progressive3');
-          let progressive4 = scans[i].get('progressive4');
-          let progressive5 = scans[i].get('progressive5');
-          let progressive6 = scans[i].get('progressive6');
-          let progressive7 = scans[i].get('progressive7');
-          let progressive8 = scans[i].get('progressive8');
-          let progressive9 = scans[i].get('progressive9');
-          let progressive10 = scans[i].get('progressive10');
-          let reset1 = 'reset1' in scans[i] ? scans[i].get('reset1') : "";
-          let reset2 = 'reset2' in scans[i] ? scans[i].get('reset2') : "";
-          let reset3 = 'reset3' in scans[i] ? scans[i].get('reset3') : "";
-          let reset4 = 'reset4' in scans[i] ? scans[i].get('reset4') : "";
-          let reset5 = 'reset5' in scans[i] ? scans[i].get('reset5') : "";
-          let reset6 = 'reset6' in scans[i] ? scans[i].get('reset6') : "";
-          let reset7 = 'reset7' in scans[i] ? scans[i].get('reset7') : "";
-          let reset8 = 'reset8' in scans[i] ? scans[i].get('reset8') : "";
-          let reset9 = 'reset9' in scans[i] ? scans[i].get('reset9') : "";
-          let reset10 = 'reset10' in scans[i] ? scans[i].get('reset10') : "";
-          let location = scans[i].get('location');
-          let timestamp = scans[i].get('timestamp').toDate().toLocaleString();
-          let userName = scans[i].get('userName');
-          let notes = scans[i].get('notes');
-          let row = { docId: docId, machineId: machineId, progressive1: progressive1, progressive2: progressive2, progressive3: progressive3, progressive4: progressive4, progressive5: progressive5, progressive6: progressive6, progressive7: progressive7, progressive8: progressive8, progressive9: progressive9, progressive10: progressive10, reset1: reset1, reset2: reset2, reset3: reset3, reset4: reset4, reset5: reset5, reset6: reset6, reset7: reset7, reset8: reset8, reset9: reset9, reset10: reset10, location: location, timestamp: timestamp, userName: userName, notes: notes };
-          rowData.push(row);
-        }
+        let rowData = this.formatScanData(scans);
         this.setState({ data: rowData });
       } else if (this.props.latestScansRange === 'day') {
-        //alert('3');
         let scans = await firebase.queryLastDayScans();
-        let rowData = [];
-        for (let i = 0; i < scans.length; i++) {
-          let docId = scans[i].id;
-          let machineId = scans[i].get('machine_id');
-          let progressive1 = scans[i].get('progressive1');
-          let progressive2 = scans[i].get('progressive2');
-          let progressive3 = scans[i].get('progressive3');
-          let progressive4 = scans[i].get('progressive4');
-          let progressive5 = scans[i].get('progressive5');
-          let progressive6 = scans[i].get('progressive6');
-          let progressive7 = scans[i].get('progressive7');
-          let progressive8 = scans[i].get('progressive8');
-          let progressive9 = scans[i].get('progressive9');
-          let progressive10 = scans[i].get('progressive10');
-          let reset1 = 'reset1' in scans[i] ? scans[i].get('reset1') : "";
-          let reset2 = 'reset2' in scans[i] ? scans[i].get('reset2') : "";
-          let reset3 = 'reset3' in scans[i] ? scans[i].get('reset3') : "";
-          let reset4 = 'reset4' in scans[i] ? scans[i].get('reset4') : "";
-          let reset5 = 'reset5' in scans[i] ? scans[i].get('reset5') : "";
-          let reset6 = 'reset6' in scans[i] ? scans[i].get('reset6') : "";
-          let reset7 = 'reset7' in scans[i] ? scans[i].get('reset7') : "";
-          let reset8 = 'reset8' in scans[i] ? scans[i].get('reset8') : "";
-          let reset9 = 'reset9' in scans[i] ? scans[i].get('reset9') : "";
-          let reset10 = 'reset10' in scans[i] ? scans[i].get('reset10') : "";
-          let location = scans[i].get('location');
-          let timestamp = scans[i].get('timestamp').toDate().toLocaleString();
-          let userName = scans[i].get('userName');
-          let notes = scans[i].get('notes');
-          let row = { docId: docId, machineId: machineId, progressive1: progressive1, progressive2: progressive2, progressive3: progressive3, progressive4: progressive4, progressive5: progressive5, progressive6: progressive6, progressive7: progressive7, progressive8: progressive8, progressive9: progressive9, progressive10: progressive10, reset1: reset1, reset2: reset2, reset3: reset3, reset4: reset4, reset5: reset5, reset6: reset6, reset7: reset7, reset8: reset8, reset9: reset9, reset10: reset10, location: location, timestamp: timestamp, userName: userName, notes: notes };
-          rowData.push(row);
-        }
+        let rowData = this.formatScanData(scans);
         this.setState({ data: rowData });
       } else if (this.props.latestScansRange === 'week') {
-        //alert('4');
         let scans = await firebase.queryLastWeekScans();
-        let rowData = [];
-        for (let i = 0; i < scans.length; i++) {
-          let docId = scans[i].id;
-          let machineId = scans[i].get('machine_id');
-          let progressive1 = scans[i].get('progressive1');
-          let progressive2 = scans[i].get('progressive2');
-          let progressive3 = scans[i].get('progressive3');
-          let progressive4 = scans[i].get('progressive4');
-          let progressive5 = scans[i].get('progressive5');
-          let progressive6 = scans[i].get('progressive6');
-          let progressive7 = scans[i].get('progressive7');
-          let progressive8 = scans[i].get('progressive8');
-          let progressive9 = scans[i].get('progressive9');
-          let progressive10 = scans[i].get('progressive10');
-          let reset1 = 'reset1' in scans[i] ? scans[i].get('reset1') : "";
-          let reset2 = 'reset2' in scans[i] ? scans[i].get('reset2') : "";
-          let reset3 = 'reset3' in scans[i] ? scans[i].get('reset3') : "";
-          let reset4 = 'reset4' in scans[i] ? scans[i].get('reset4') : "";
-          let reset5 = 'reset5' in scans[i] ? scans[i].get('reset5') : "";
-          let reset6 = 'reset6' in scans[i] ? scans[i].get('reset6') : "";
-          let reset7 = 'reset7' in scans[i] ? scans[i].get('reset7') : "";
-          let reset8 = 'reset8' in scans[i] ? scans[i].get('reset8') : "";
-          let reset9 = 'reset9' in scans[i] ? scans[i].get('reset9') : "";
-          let reset10 = 'reset10' in scans[i] ? scans[i].get('reset10') : "";
-          let location = scans[i].get('location');
-          let timestamp = scans[i].get('timestamp').toDate().toLocaleString();
-          let userName = scans[i].get('userName');
-          let notes = scans[i].get('notes');
-          let row = { docId: docId, machineId: machineId, progressive1: progressive1, progressive2: progressive2, progressive3: progressive3, progressive4: progressive4, progressive5: progressive5, progressive6: progressive6, progressive7: progressive7, progressive8: progressive8, progressive9: progressive9, progressive10: progressive10, reset1: reset1, reset2: reset2, reset3: reset3, reset4: reset4, reset5: reset5, reset6: reset6, reset7: reset7, reset8: reset8, reset9: reset9, reset10: reset10, location: location, timestamp: timestamp, userName: userName, notes: notes };
-          rowData.push(row);
-        }
+        let rowData = this.formatScanData(scans);
         this.setState({ data: rowData });
       }
     }
@@ -216,62 +70,9 @@ class MaterialTableDemo extends Component {
 
   // On mount, fetch most recent scans regardless of date
   async componentDidMount() {
-    //alert('componentDidMount');
     let scans = await firebase.queryMostRecentScans();
-    let rowData = [];
-    for (let i = 0; i < scans.length; i++) {
-      let docId = scans[i].id;
-      let machineId = scans[i].get('machine_id');
-      let progressive1 = scans[i].get('progressive1');
-      let progressive2 = scans[i].get('progressive2');
-      let progressive3 = scans[i].get('progressive3');
-      let progressive4 = scans[i].get('progressive4');
-      let progressive5 = scans[i].get('progressive5');
-      let progressive6 = scans[i].get('progressive6');
-      let progressive7 = scans[i].get('progressive7');
-      let progressive8 = scans[i].get('progressive8');
-      let progressive9 = scans[i].get('progressive9');
-      let progressive10 = scans[i].get('progressive10');
-      let location = scans[i].get('location');
-      let timestamp = scans[i].get('timestamp').toDate().toLocaleString();
-      let userName = scans[i].get('userName');
-      let notes = scans[i].get('notes');
-      
-      let reset1 = scans[i].get('reset1') == null ? "" : scans[i].get('reset1');
-      let reset2 = scans[i].get('reset2') == null ? "" : scans[i].get('reset2');
-      let reset3 = scans[i].get('reset3') == null ? "" : scans[i].get('reset3');
-      let reset4 = scans[i].get('reset4') == null ? "" : scans[i].get('reset4');
-      let reset5 = scans[i].get('reset5') == null ? "" : scans[i].get('reset5');
-      let reset6 = scans[i].get('reset6') == null ? "" : scans[i].get('reset6');
-      let reset7 = scans[i].get('reset7') == null ? "" : scans[i].get('reset7');
-      let reset8 = scans[i].get('reset8') == null ? "" : scans[i].get('reset8');
-      let reset9 = scans[i].get('reset9') == null ? "" : scans[i].get('reset9');
-      let reset10 = scans[i].get('reset10') == null ? "" : scans[i].get('reset10');
-
-      /*let reset1 = 'reset1' in scans[i] ? scans[i].get('reset1') : "";
-      let reset2 = 'reset2' in scans[i] ? scans[i].get('reset2') : "";
-      let reset3 = 'reset3' in scans[i] ? scans[i].get('reset3') : "";
-      let reset4 = 'reset4' in scans[i] ? scans[i].get('reset4') : "";
-      let reset5 = 'reset5' in scans[i] ? scans[i].get('reset5') : "";
-      let reset6 = 'reset6' in scans[i] ? scans[i].get('reset6') : "";
-      let reset7 = 'reset7' in scans[i] ? scans[i].get('reset7') : "";
-      let reset8 = 'reset8' in scans[i] ? scans[i].get('reset8') : "";
-      let reset9 = 'reset9' in scans[i] ? scans[i].get('reset9') : "";
-      let reset10 = 'reset10' in scans[i] ? scans[i].get('reset10') : "";*/
-      
-      let row = { docId: docId, machineId: machineId, progressive1: progressive1, progressive2: progressive2, progressive3: progressive3, progressive4: progressive4, progressive5: progressive5, progressive6: progressive6, progressive7: progressive7, progressive8: progressive8, progressive9: progressive9, progressive10: progressive10, reset1: reset1, reset2: reset2, reset3: reset3, reset4: reset4, reset5: reset5, reset6: reset6, reset7: reset7, reset8: reset8, reset9: reset9, reset10: reset10, location: location, timestamp: timestamp, userName: userName, notes: notes };
-      rowData.push(row);
-    }
-    //
-    let displayResets = await firebase.getDisplayResetValues();
-    let cols = this.state.columns;
-    //console.log(displayResets);
-    for (let i = 1; i <= 10; i++) {
-      cols.push({ title: 'R' + i.toString(), field: 'reset' + i.toString(), width: 80, hidden: true, export: displayResets });
-    }
-    //
-
-    this.setState({ columns: cols, data: rowData, initialLoad: false });
+    let rowData = this.formatScanData(scans);
+    this.setState({ data: rowData, initialLoad: false });
   }
 
   handleClose(event, reason) {
@@ -287,6 +88,79 @@ class MaterialTableDemo extends Component {
     var day = date.getDate();
     var year = date.getYear() + 1900;
     return month + "-" + day + "-" + year;
+  }
+
+  formatScanData(scans) {
+    let rowData = [];
+    for (let i = 0; i < scans.length; i++) {
+      let docId = scans[i].id;
+      let machineId = scans[i].get('machine_id');
+      let location = scans[i].get('location');
+      let timestamp = scans[i].get('timestamp').toDate().toLocaleString();
+      let userName = scans[i].get('userName');
+      let notes = scans[i].get('notes');
+      let progressive1 = scans[i].get('progressive1') == null ? "" : scans[i].get('progressive1');
+      let progressive2 = scans[i].get('progressive2') == null ? "" : scans[i].get('progressive2');
+      let progressive3 = scans[i].get('progressive3') == null ? "" : scans[i].get('progressive3');
+      let progressive4 = scans[i].get('progressive4') == null ? "" : scans[i].get('progressive4');
+      let progressive5 = scans[i].get('progressive5') == null ? "" : scans[i].get('progressive5');
+      let progressive6 = scans[i].get('progressive6') == null ? "" : scans[i].get('progressive6');
+      let progressive7 = scans[i].get('progressive7') == null ? "" : scans[i].get('progressive7');
+      let progressive8 = scans[i].get('progressive8') == null ? "" : scans[i].get('progressive8');
+      let progressive9 = scans[i].get('progressive9') == null ? "" : scans[i].get('progressive9');
+      let progressive10 = scans[i].get('progressive10') == null ? "" : scans[i].get('progressive10');
+      let base1 = scans[i].get('reset1') == null ? "" : scans[i].get('reset1');
+      let base2 = scans[i].get('reset2') == null ? "" : scans[i].get('reset2');
+      let base3 = scans[i].get('reset3') == null ? "" : scans[i].get('reset3');
+      let base4 = scans[i].get('reset4') == null ? "" : scans[i].get('reset4');
+      let base5 = scans[i].get('reset5') == null ? "" : scans[i].get('reset5');
+      let base6 = scans[i].get('reset6') == null ? "" : scans[i].get('reset6');
+      let base7 = scans[i].get('reset7') == null ? "" : scans[i].get('reset7');
+      let base8 = scans[i].get('reset8') == null ? "" : scans[i].get('reset8');
+      let base9 = scans[i].get('reset9') == null ? "" : scans[i].get('reset9');
+      let base10 = scans[i].get('reset10') == null ? "" : scans[i].get('reset10');
+      if (progressive1 !== "") {
+        let row = { docId: docId, machineId: machineId, progressive_index: 1, progressive: progressive1, base: base1, location: location, timestamp: timestamp, userName: userName, notes: notes };
+        rowData.push(row);
+      }
+      if (progressive2 !== "") {
+        let row = { docId: docId, machineId: machineId, progressive_index: 2, progressive: progressive2, base: base2, location: location, timestamp: timestamp, userName: userName, notes: notes };
+        rowData.push(row);
+      }
+      if (progressive3 !== "") {
+        let row = { docId: docId, machineId: machineId, progressive_index: 3, progressive: progressive3, base: base3, location: location, timestamp: timestamp, userName: userName, notes: notes };
+        rowData.push(row);
+      }
+      if (progressive4 !== "") {
+        let row = { docId: docId, machineId: machineId, progressive_index: 4, progressive: progressive4, base: base4, location: location, timestamp: timestamp, userName: userName, notes: notes };
+        rowData.push(row);
+      }
+      if (progressive5 !== "") {
+        let row = { docId: docId, machineId: machineId, progressive_index: 5, progressive: progressive5, base: base5, location: location, timestamp: timestamp, userName: userName, notes: notes };
+        rowData.push(row);
+      }
+      if (progressive6 !== "") {
+        let row = { docId: docId, machineId: machineId, progressive_index: 6, progressive: progressive6, base: base6, location: location, timestamp: timestamp, userName: userName, notes: notes };
+        rowData.push(row);
+      }
+      if (progressive7 !== "") {
+        let row = { docId: docId, machineId: machineId, progressive_index: 7, progressive: progressive7, base: base7, location: location, timestamp: timestamp, userName: userName, notes: notes };
+        rowData.push(row);
+      }
+      if (progressive8 !== "") {
+        let row = { docId: docId, machineId: machineId, progressive_index: 8, progressive: progressive8, base: base8, location: location, timestamp: timestamp, userName: userName, notes: notes };
+        rowData.push(row);
+      }
+      if (progressive9 !== "") {
+        let row = { docId: docId, machineId: machineId, progressive_index: 9, progressive: progressive9, base: base9, location: location, timestamp: timestamp, userName: userName, notes: notes };
+        rowData.push(row);
+      }
+      if (progressive10 !== "") {
+        let row = { docId: docId, machineId: machineId, progressive_index: 10, progressive: progressive10, base: base10, location: location, timestamp: timestamp, userName: userName, notes: notes };
+        rowData.push(row);
+      }
+    }
+    return rowData;
   }
 
   render() {

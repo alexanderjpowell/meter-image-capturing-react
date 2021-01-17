@@ -13,7 +13,6 @@ import {
 } from '@material-ui/core';
 import { MuiPickersUtilsProvider, KeyboardTimePicker } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
-import Switch from '@material-ui/core/Switch';
 import Typography from '@material-ui/core/Typography';
 import firebase from '../../../../firebase/firebase';
 
@@ -91,7 +90,7 @@ class Notifications extends Component {
   }
 
   render() {
-    const { classes } = this.props;
+    //const { classes } = this.props;
     const helperText = "Must be a percentage between 0 and 100";
 
     return (
@@ -106,7 +105,6 @@ class Notifications extends Component {
             <Grid><TextField label="Casino/Account Name" variant="outlined" value={this.state.name}></TextField></Grid>
             <Grid><TextField label="Account Email" variant="outlined" style={{ marginTop: '1rem', marginBottom: '1rem' }} value={this.state.email}></TextField></Grid>
             <hr/>
-            <Grid className={classes.switch}><Switch checked={this.state.displayResets} disabled={this.state.loading} onChange={this.handleToggleSwitch} inputProps={{ 'aria-label': 'primary checkbox' }}/><Typography className={classes.switchText}>Include reset values in report downloads</Typography></Grid>
             <Grid>
               <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <KeyboardTimePicker

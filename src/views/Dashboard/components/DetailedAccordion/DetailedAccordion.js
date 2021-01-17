@@ -1,23 +1,22 @@
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import Accordion from '@material-ui/core/Accordion'
+import AccordionSummary from '@material-ui/core/AccordionSummary'
+import AccordionDetails from '@material-ui/core/AccordionActions'
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Chip from '@material-ui/core/Chip';
 import TuneIcon from '@material-ui/icons/Tune';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Tooltip from '@material-ui/core/Tooltip';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
+//import InputLabel from '@material-ui/core/InputLabel';
+//import MenuItem from '@material-ui/core/MenuItem';
+//import Tooltip from '@material-ui/core/Tooltip';
+//import FormControl from '@material-ui/core/FormControl';
+//import Select from '@material-ui/core/Select';
 import { MuiThemeProvider, Button, Grid } from "@material-ui/core";
 import DateFnsUtils from '@date-io/date-fns';
 import { DateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
-//import Divider from '@material-ui/core/Divider';
 
 const themeText = createMuiTheme({
     typography: {
@@ -49,6 +48,7 @@ const styles = theme => ({
         margin: 2
     },
     column: {
+        marginLeft: theme.spacing(2),
         flexBasis: '33.33%',
     },
     helper: {
@@ -72,7 +72,7 @@ const styles = theme => ({
     },
 });
 
-class DetailedExpansionPanel extends Component {
+class DetailedAccordion extends Component {
 
     constructor(props) {
         super(props);
@@ -105,8 +105,8 @@ class DetailedExpansionPanel extends Component {
         const localEndDate = this.state.localEndDate;
     return (
         <div className={classes.root}>
-            <ExpansionPanel>
-                <ExpansionPanelSummary
+            <Accordion>
+                <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls="panel1c-content"
                     id="panel1c-header">
@@ -115,8 +115,8 @@ class DetailedExpansionPanel extends Component {
                         <Typography className={classes.heading}>Filter Results</Typography>
                     </div>
                     
-                </ExpansionPanelSummary>
-                <ExpansionPanelDetails>
+                </AccordionSummary>
+                <AccordionDetails>
                     <Grid container>
                         <Grid item lg={3} sm={6} md={6}>
                             <div className={classes.column}>
@@ -130,39 +130,6 @@ class DetailedExpansionPanel extends Component {
                                 <div>
                                     <Chip id="week" label="This week" className={classes.chip} onClick={() => this.handleDateClick('week')} />
                                 </div>
-                            </div>
-                        </Grid>
-                        <Grid item lg={3} sm={6} md={6}>
-                            <div className={classes.column}>
-                                <Typography>Sort By:</Typography>
-                                <div>
-                                    <Tooltip title="Feature coming soon"><Chip label="Timestamp" className={classes.chip}/></Tooltip>
-                                </div>
-                                <div>
-                                    <Tooltip title="Feature coming soon"><Chip label="Machine ID" className={classes.chip}/></Tooltip>
-                                </div>
-                            </div>
-                        </Grid>
-                        <Grid item lg={3} sm={12} md={12}>
-                            <div className={classes.column}>
-                                <Typography>By User:</Typography>
-                                <Tooltip title="Feature coming soon">
-                                <FormControl variant="outlined" disabled='true' className={classes.formControl}>
-                                    <InputLabel id="demo-simple-select-outlined-label">User</InputLabel>
-                                    <Select
-                                        labelId="demo-simple-select-outlined-label"
-                                        id="demo-simple-select-outlined"
-                                        //value={age}
-                                        //onChange={handleChange}
-                                        label="Age">
-                                        <MenuItem value=""><em>Show all</em></MenuItem>
-                                        <MenuItem value={10}>Alex</MenuItem>
-                                        <MenuItem value={20}>Alexander</MenuItem>
-                                        <MenuItem value={30}>Joe</MenuItem>
-                                        <MenuItem value={40}>Patrick</MenuItem>
-                                    </Select>
-                                </FormControl>
-                                </Tooltip>
                             </div>
                         </Grid>
                         <Grid item lg={3} sm={12}>
@@ -223,20 +190,15 @@ class DetailedExpansionPanel extends Component {
                         </div>
                         </Grid>*/}
                     </Grid>
-                </ExpansionPanelDetails>
-                {/*<Divider />
-                <ExpansionPanelActions>
-                    <Button size="small">Cancel</Button>
-                    <Button size="small" color="primary">Search</Button>
-                </ExpansionPanelActions>*/}
-            </ExpansionPanel>
+                </AccordionDetails>
+            </Accordion>
         </div>
     );
     }
 }
 
-DetailedExpansionPanel.propTypes = {
+DetailedAccordion.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(DetailedExpansionPanel);
+export default withStyles(styles)(DetailedAccordion);

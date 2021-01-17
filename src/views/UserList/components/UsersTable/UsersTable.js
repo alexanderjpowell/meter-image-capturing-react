@@ -3,7 +3,6 @@ import MaterialTable from 'material-table';
 import { withRouter } from 'react-router-dom';
 import firebase from '../../../../firebase/firebase'
 
-//export default function UsersTable() {
 class UsersTable extends Component {
 
   constructor(props) {
@@ -14,7 +13,7 @@ class UsersTable extends Component {
     this.state = {
       columns: [
         { title: 'Name', field: 'name' },
-        { title: 'Pin Code', field: 'pinCode' },
+        { title: 'Pin Code', field: 'pinCode', render: _ => '****' , width: 10, validate: rowData => this.validatePinCode(rowData.pinCode) ? { isValid: false, helperText: '4 digit numeric string required' } : true},
       ],
       data: []
     };
@@ -25,11 +24,16 @@ class UsersTable extends Component {
     let rowData = [];
     for (let i = 0; i < usernames.length; i++) {
       let displayName = usernames[i].get('displayName');
-      //let pinCode = usernames[i].get('pinCode');
-      let row = { name: displayName, pinCode: '****' };
+      let pinCode = usernames[i].get('pinCode');
+      let row = { name: displayName, pinCode: pinCode };
       rowData.push(row);
     }
     this.setState({ data: rowData });
+  }
+
+  validatePinCode(pin) {
+    let isnum = /^\d+$/.test(pin);
+    return (!isnum || (pin.length !== 4));
   }
 
   render() {
@@ -43,10 +47,13 @@ class UsersTable extends Component {
         rowStyle: {
           fontSize: 14,
           fontFamily: 'Roboto',
-        }
+        },
+        pageSize: 10,
+        
       }}
       editable={{
-        /*onRowAdd: (newData) =>
+        isDeletable: rowData => true,
+        onRowAdd: (newData) =>
           new Promise((resolve) => {
             console.log('onRowAdd');
             
@@ -60,7 +67,7 @@ class UsersTable extends Component {
                 return { ...prevState, data };
               });
             }, 600);
-          }),*/
+          }),
         /*onRowUpdate: (newData, oldData) =>
           new Promise((resolve) => {
             firebase.updateUserName(oldData.name, newData.name, newData.pinCode);

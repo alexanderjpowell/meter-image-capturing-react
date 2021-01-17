@@ -27,6 +27,9 @@ const styles = (theme) => ({
     },
     statsGrids: {
         height: "100%"
+    },
+    textArea: {
+        margin: '30px',
     }
 });
 
@@ -37,7 +40,7 @@ class DailyReports extends Component {
         if (!firebase.getCurrentUser()) {
             props.history.replace('/signin');
         }
-        this.state = { allData: [], filteredData: [], presentableData: [], underflowCount: 0, totalChange: 0, totalScans: 0, queryDate: new Date(), loading: true, displayExceptionsOnly: false };
+        this.state = { allData: [], filteredData: [], presentableData: [], underflowCount: 0, totalChange: 0, totalScans: 0, prevDaySum: 0, curDaySum: 0, queryDate: new Date(), loading: true, displayExceptionsOnly: false };
         this.handleDateChange = this.handleDateChange.bind(this);
         this.filterAllorExceptionScans = this.filterAllorExceptionScans.bind(this);
         this.handleDateChange(new Date()); // Initially query from current date
@@ -52,11 +55,15 @@ class DailyReports extends Component {
         let hours = resetTime.getHours();
         let minutes = resetTime.getMinutes();
         let allData = await firebase.getDocsOnDate(year, month, day, hours, minutes);
-        let sum = 0;
+        let changeAbsolute = 0;
         let underflowcount = 0;
         let filteredData = [];
+        let prevDaySum = 0;
+        let curDaySum = 0;
         allData.forEach(function(item) {
-            sum += item.change;
+            changeAbsolute += item.changeAbsolute;
+            prevDaySum += item.prev_day_val;
+            curDaySum += item.cur_day_val;
             if (item.exception) {
                 filteredData.push(item);
                 underflowcount++;
@@ -64,9 +71,9 @@ class DailyReports extends Component {
         });
 
         if (this.state.displayExceptionsOnly) {
-            this.setState({ allData: allData, filteredData: filteredData, presentableData: filteredData, underflowCount: underflowcount, totalChange: sum, totalScans: allData.length, queryDate: dateObject, loading: false });
+            this.setState({ allData: allData, filteredData: filteredData, presentableData: filteredData, underflowCount: underflowcount, totalChange: changeAbsolute, totalScans: allData.length, prevDaySum: prevDaySum, curDaySum: curDaySum, queryDate: dateObject, loading: false });
         } else {
-            this.setState({ allData: allData, filteredData: filteredData, presentableData: allData, underflowCount: underflowcount, totalChange: sum, totalScans: allData.length, queryDate: dateObject, loading: false });
+            this.setState({ allData: allData, filteredData: filteredData, presentableData: allData, underflowCount: underflowcount, totalChange: changeAbsolute, totalScans: allData.length, prevDaySum: prevDaySum, curDaySum: curDaySum, queryDate: dateObject, loading: false });
         }
     }
 
@@ -157,41 +164,11 @@ class DailyReports extends Component {
                         <Card style={{ height: '100%' }}>
                             <CardContent>
                                 <Typography color="textSecondary" gutterBottom variant="h6">EXCEPTION PERCENTAGE</Typography>
-                                <Typography color="textPrimary" variant="h3">{this.state.loading ? '-' : percentUnder + '%'}</Typography>
+                                <Typography color="textPrimary" variant="h3">{this.state.loading ? '-' : firebase.round(percentUnder) + '%'}</Typography>
                                 <Typography color="textSecondary" variant="caption">{this.state.loading ? '' : this.state.underflowCount + ' / ' + this.state.totalScans + ' scans fall outside the range set for exceptions'}</Typography>
                             </CardContent>
                         </Card>
                     </Grid>
-                    <Grid
-                        item
-                        xl={2}
-                        lg={2}
-                        sm={12}
-                        xs={12}
-                    >
-                        <Card style={{ height: '100%' }}>
-                            <CardContent>
-                                <Typography color="textSecondary" gutterBottom variant="h6">TOTAL SCANS</Typography>
-                                    <Typography color="textPrimary" variant="h3">{this.state.loading ? '-' : this.state.totalScans}</Typography>
-                            </CardContent>
-                        </Card>
-                    </Grid>
-                    <Grid
-                        item
-                        xl={2}
-                        lg={2}
-                        sm={12}
-                        xs={12}
-                    >
-                        <Card style={{ height: '100%' }}>
-                            <CardContent>
-                                <Typography color="textSecondary" gutterBottom variant="h6">CUMULATIVE CHANGE</Typography>
-                                <Typography color="textPrimary" variant="h3">{this.state.loading ? '-' : firebase.round(this.state.totalChange)}%</Typography>
-                                <Typography color="textSecondary" variant="caption">{this.state.loading ? '' : 'Compared to the previous day'}</Typography>
-                            </CardContent>
-                        </Card>
-                    </Grid>
-
                     <Grid
                         item
                         xl={3}
@@ -201,7 +178,46 @@ class DailyReports extends Component {
                     >
                         <Card style={{ height: '100%' }}>
                             <CardContent>
-                                <Typography color="textSecondary" gutterBottom variant="h6">FILTER RESULTS</Typography>
+                                <Typography color="textSecondary" gutterBottom variant="h6">PROGRESSIVE LIABILITY</Typography>
+                                
+                                <Typography color="textPrimary" variant="h3">{this.state.loading ? '-' : '$' + this.state.prevDaySum}</Typography>
+                                <Typography color="textSecondary" variant="caption">Total Progressive Liability for {this.convertDateToString(this.calculatePreviousDate(this.state.queryDate))}</Typography>
+                                <hr/>         
+                                <Typography color="textPrimary" variant="h3">{this.state.loading ? '-' : '$' + this.state.curDaySum}</Typography>
+                                <Typography color="textSecondary" variant="caption">Total Progressive Liability for {this.convertDateToString(this.state.queryDate)}</Typography>
+                                
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                    <Grid
+                        item
+                        xl={2}
+                        lg={2}
+                        sm={12}
+                        xs={12}
+                    >
+                        <Card style={{ height: '100%' }}>
+                            <CardContent>
+                                <Typography color="textSecondary" gutterBottom variant="h6">DAILY CHANGE IN PROGRESSIVE LIABILITY</Typography>
+                                <Typography color="textPrimary" variant="h3">{this.state.loading ? '-' : '$' + firebase.round(this.state.totalChange)}</Typography>
+                                <Typography color="textSecondary" variant="caption">{this.state.loading ? '' : 'Compared to the previous day'}</Typography>
+                                <hr/>
+                                <Typography color="textPrimary" variant="h3">{this.state.loading ? '-' : this.state.totalScans}</Typography>
+                                <Typography color="textSecondary" variant="caption">Progressives read</Typography>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+
+                    <Grid
+                        item
+                        xl={2}
+                        lg={2}
+                        sm={12}
+                        xs={12}
+                    >
+                        <Card style={{ height: '100%' }}>
+                            <CardContent>
+                                <Typography color="textSecondary" gutterBottom variant="h6">FILTER RESULTS FOR EXCEPTIONS</Typography>
                                 <Switch checked={this.state.displayExceptionsOnly} onChange={this.filterAllorExceptionScans} label="Chip 1" color="secondary" style={{marginRight: 5}}/>
                                 <Typography>Only display results over and under the metrics provided in settings</Typography>
                             </CardContent>
