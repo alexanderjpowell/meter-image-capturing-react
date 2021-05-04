@@ -3,21 +3,10 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/styles';
 import { Grid } from '@material-ui/core';
 import {
-  //Budget,
-  //TotalUsers,
-  //TasksProgress,
-  //TotalProfit,
-  //LatestSales,
-  //UsersByDevice,
-  //LatestProducts,
-  //LatestOrders,
   MaterialTableDemo,
   DetailedAccordion
 } from './components';
 import firebase from '../../firebase/firebase';
-
-//import { DataGrid } from 'tubular-react';
-//import { createColumn } from "tubular-common";
 
 const styles = theme => ({
   root: {
@@ -34,7 +23,8 @@ class Dashboard extends Component {
     }
     this.handleOnDateRangeSearchClick = this.handleOnDateRangeSearchClick.bind(this);
     this.handleOnDateClick = this.handleOnDateClick.bind(this);
-    this.state = { startDate: new Date(), endDate: new Date(), latestScansRange: '' };
+    this.handleOnMachineIdSearch = this.handleOnMachineIdSearch.bind(this);
+    this.state = { startDate: new Date(), endDate: new Date(), latestScansRange: '', machineId: null };
   }
 
   handleOnDateRangeSearchClick(startDate, endDate) {
@@ -46,11 +36,16 @@ class Dashboard extends Component {
     this.setState({ latestScansRange: code });
   }
 
+  handleOnMachineIdSearch(id) {
+    this.setState({ machineId: id });
+  }
+
   render() {
     const { classes } = this.props;
     const startDate = this.state.startDate;
     const endDate = this.state.endDate;
     const latestScansRange = this.state.latestScansRange;
+    const machineId = this.state.machineId;
   return (
     <div className={classes.root}>
       <Grid
@@ -68,7 +63,8 @@ class Dashboard extends Component {
             startDate={startDate}
             endDate={endDate}
             onDateRangeSearchClick={this.handleOnDateRangeSearchClick}
-            onDateClick={this.handleOnDateClick} />
+            onDateClick={this.handleOnDateClick}
+            onMachineIdSearch={this.handleOnMachineIdSearch} />
         </Grid>
         <Grid
           item
@@ -80,7 +76,8 @@ class Dashboard extends Component {
           <MaterialTableDemo
             startDate={startDate}
             endDate={endDate}
-          latestScansRange={latestScansRange} />
+            latestScansRange={latestScansRange}
+            machineId={machineId} />
         </Grid>
       </Grid>
     </div>

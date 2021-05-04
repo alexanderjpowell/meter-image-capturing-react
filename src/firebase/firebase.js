@@ -50,6 +50,16 @@ class Firebase {
         return await this.getCurrentUser().updatePassword(newPassword);
     }
 
+    async queryUsers() {
+        let usersRef = this.db.collection('users').doc(this.auth.currentUser.uid).collection('displayName');
+        let ret = [];
+        let querySnapshot = await usersRef.get();
+        querySnapshot.forEach(function(doc) {
+            ret.push(doc);
+        });
+        return ret;
+    }
+
     async queryCustomDateRange(startDate, endDate) {
         let scansRef = this.db.collection('users').doc(this.auth.currentUser.uid).collection('scans')
             .where('timestamp', '>=', startDate).where('timestamp', '<=', endDate).orderBy('timestamp', 'desc');//.limit(5);
@@ -61,20 +71,10 @@ class Firebase {
         return ret;
     }
 
-    async queryUsers() {
-        let usersRef = this.db.collection('users').doc(this.auth.currentUser.uid).collection('displayName');
-        let ret = [];
-        let querySnapshot = await usersRef.get();
-        querySnapshot.forEach(function(doc) {
-            ret.push(doc);
-        });
-        return ret;
-    }
-
     async queryLastHourScans() {
         let range = new Date(Date.now() - 3600000); // 1 * 60 * 60 * 1000
         let scansRef = this.db.collection('users').doc(this.auth.currentUser.uid).collection('scans')
-            .where('timestamp', '>', range).orderBy('timestamp', 'desc');//.limit(50);
+            .where('timestamp', '>', range).orderBy('timestamp', 'desc');
         let querySnapshot = await scansRef.get();
         let ret = [];
         querySnapshot.forEach(function(doc) {
@@ -86,7 +86,7 @@ class Firebase {
     async queryLastDayScans() {
         let range = new Date(Date.now() - 86400000); // 24 * 60 * 60 * 1000
         let scansRef = this.db.collection('users').doc(this.auth.currentUser.uid).collection('scans')
-            .where('timestamp', '>', range).orderBy('timestamp', 'desc');//.limit(50);
+            .where('timestamp', '>', range).orderBy('timestamp', 'desc');
         let querySnapshot = await scansRef.get();
         let ret = [];
         querySnapshot.forEach(function(doc) {
@@ -98,7 +98,7 @@ class Firebase {
     async queryLastWeekScans() {
         let range = new Date(Date.now() - 604800000); // 24 * 7 * 60 * 60 * 1000
         let scansRef = this.db.collection('users').doc(this.auth.currentUser.uid).collection('scans')
-            .where('timestamp', '>', range).orderBy('timestamp', 'desc');//.limit(50);
+            .where('timestamp', '>', range).orderBy('timestamp', 'desc');
         let querySnapshot = await scansRef.get();
         let ret = [];
         querySnapshot.forEach(function(doc) {
@@ -111,6 +111,22 @@ class Firebase {
         let ret = [];
         try {
             let scansRef = this.db.collection('users').doc(this.auth.currentUser.uid).collection('scans')
+                .orderBy('timestamp', 'desc').limit(100);
+            let querySnapshot = await scansRef.get();
+            querySnapshot.forEach(function(doc) {
+                ret.push(doc);
+            });
+            return ret;
+        } catch (error) {
+            return ret;
+        }
+    }
+
+    async queryMostRecentScansById(machine_id) {
+        let ret = [];
+        try {
+            let scansRef = this.db.collection('users').doc(this.auth.currentUser.uid).collection('scans')
+                .where('machine_id', '==', machine_id)
                 .orderBy('timestamp', 'desc').limit(100);
             let querySnapshot = await scansRef.get();
             querySnapshot.forEach(function(doc) {
@@ -139,51 +155,97 @@ class Firebase {
         }
     }
 
+    // For now we only allow updates of progressive values 1 through 10
     updateScan(oldData, newData) {
         let updates = {};
-        if (oldData['machineId'] !== newData['machineId']) {
-            updates['machineId'] = newData['machineId'];
+
+        let progressive;
+        let index = oldData['progressive_index'];
+
+        if (index === 1) {
+            progressive = 'progressive1';
+        } else if (index === 2) {
+            progressive = 'progressive2';
+        } else if (index === 3) {
+            progressive = 'progressive3';
+        } else if (index === 4) {
+            progressive = 'progressive4';
+        } else if (index === 5) {
+            progressive = 'progressive5';
+        } else if (index === 6) {
+            progressive = 'progressive6';
+        } else if (index === 7) {
+            progressive = 'progressive7';
+        } else if (index === 8) {
+            progressive = 'progressive8';
+        } else if (index === 9) {
+            progressive = 'progressive9';
+        } else if (index === 10) {
+            progressive = 'progressive10';
+        } else if (oldData[progressive] === newData[progressive]) { // No change detected
+            return;
         }
-        if (oldData['progressive1'] !== newData['progressive1']) {
-            updates['progressive1'] = newData['progressive1'];
-        }
-        if (oldData['progressive2'] !== newData['progressive2']) {
-            updates['progressive2'] = newData['progressive2'];
-        }
-        if (oldData['progressive3'] !== newData['progressive3']) {
-            updates['progressive3'] = newData['progressive3'];
-        }
-        if (oldData['progressive4'] !== newData['progressive4']) {
-            updates['progressive4'] = newData['progressive4'];
-        }
-        if (oldData['progressive5'] !== newData['progressive5']) {
-            updates['progressive5'] = newData['progressive5'];
-        }
-        if (oldData['progressive6'] !== newData['progressive6']) {
-            updates['progressive6'] = newData['progressive6'];
-        }
-        if (oldData['progressive7'] !== newData['progressive7']) {
-            updates['progressive7'] = newData['progressive7'];
-        }
-        if (oldData['progressive8'] !== newData['progressive8']) {
-            updates['progressive8'] = newData['progressive8'];
-        }
-        if (oldData['progressive9'] !== newData['progressive9']) {
-            updates['progressive9'] = newData['progressive9'];
-        }
-        if (oldData['progressive10'] !== newData['progressive10']) {
-            updates['progressive10'] = newData['progressive10'];
-        }
-        if (oldData['location'] !== newData['location']) {
-            updates['location'] = newData['location'];
-        }
+
+        updates[progressive] = newData.progressive;
 
         this.db.collection('users')
             .doc(this.auth.currentUser.uid)
             .collection('scans')
             .doc(oldData.docId)
-            .update(updates);
+            .update(updates)
+            .then(function() {
+                console.log("Document successfully updated!");
+            })
+            .catch(function(error) {
+                console.error("Error updating document: ", error);
+            });
 
+    }
+
+    updateScanFromDailyChange(oldData, newData) {
+        if (oldData === newData) return;
+        let updates = {};
+
+        let progressive;
+        let index = oldData['progressive_index'];
+
+        if (index === 1) {
+            progressive = 'progressive1';
+        } else if (index === 2) {
+            progressive = 'progressive2';
+        } else if (index === 3) {
+            progressive = 'progressive3';
+        } else if (index === 4) {
+            progressive = 'progressive4';
+        } else if (index === 5) {
+            progressive = 'progressive5';
+        } else if (index === 6) {
+            progressive = 'progressive6';
+        } else if (index === 7) {
+            progressive = 'progressive7';
+        } else if (index === 8) {
+            progressive = 'progressive8';
+        } else if (index === 9) {
+            progressive = 'progressive9';
+        } else if (index === 10) {
+            progressive = 'progressive10';
+        } else if (oldData[progressive] === newData[progressive]) { // No change detected
+            return;
+        }
+
+        updates[progressive] = String(newData.cur_day_val);
+
+        this.db.collection('users')
+            .doc(this.auth.currentUser.uid)
+            .collection('scans')
+            .doc(newData.doc_id)
+            .update(updates)
+            .then(function() {
+                console.log("Document successfully updated!");
+            })
+            .catch(function(error) {
+                console.error("Error updating document: ", error);
+            });
     }
 
     deleteScan(docId) {
@@ -375,11 +437,13 @@ class Firebase {
         startDate = new Date(year, month, day, resetHours, resetMinutes);
         endDate = new Date(new Date(startDate).getTime() + 60 * 60 * 24 * 1000); // Add 24 hours
         let scansRef = this.db.collection('users').doc(this.auth.currentUser.uid).collection('scans');
-        let query = scansRef.where('timestamp', '>=', startDate).where('timestamp', '<=', endDate).orderBy('timestamp', 'desc');//.limit(10);
+        let query = scansRef.where('timestamp', '>=', startDate).where('timestamp', '<=', endDate).orderBy('timestamp', 'desc');
         let curDayScans = [];
         await query.get().then(function(snapshot) {
             snapshot.forEach(function(doc) {
-                curDayScans.push(doc.data());
+                const data = doc.data();
+                data.id = doc.id;
+                curDayScans.push(data);
             });
         }).catch(function(error) {
             console.log(error);
@@ -389,7 +453,7 @@ class Firebase {
         // Now calculate previous day
         startDate.setDate(startDate.getDate() - 1);
         endDate.setDate(endDate.getDate() - 1);
-        query = scansRef.where('timestamp', '>=', startDate).where('timestamp', '<=', endDate).orderBy('timestamp', 'desc');//.limit(10);
+        query = scansRef.where('timestamp', '>=', startDate).where('timestamp', '<=', endDate).orderBy('timestamp', 'desc');
         let prevDayScans = [];
         await query.get().then(function(snapshot) {
             snapshot.forEach(function(doc) {
@@ -413,7 +477,7 @@ class Firebase {
             match = false;
             for (let j = 0; j < prevDayScans.length; j++) {
                 if (curDayScans[i].machine_id === prevDayScans[j].machine_id) {
-                    let changes = this.compare(curDayScans[i], prevDayScans[j], lowerThreshold, upperThreshold);
+                    let changes = await this.compare(curDayScans[i], prevDayScans[j], lowerThreshold, upperThreshold);
                     changes.forEach(function(change) {
                         ret.push(change);
                     });
@@ -444,21 +508,22 @@ class Firebase {
             let curVal = +curProgressives[i];
             let base = +bases[i];
             let increment = +increments[i];
-            let change = "-";
-            let changeAbsolute = "-";
+            let dollar_change = "-";
+            let percent_change = "-";
             //let underflow = false;
             let exception = false;
             if (!isNaN(curVal) && !isNaN(base) && !isNaN(increment)) {
                 ret.push({
+                    doc_id: cur.id,
                     location: cur.location,
                     machine_id: cur.machine_id,
-                    //prog_name: 'Major',
+                    notes: cur.notes,
                     base: base,
                     increment: increment,
                     cur_day_val: curVal,
                     prev_day_val: "No Match Found",
-                    change: change,
-                    changeAbsolute: changeAbsolute,
+                    dollar_change: dollar_change,
+                    percent_change: percent_change,
                     //underflow: underflow,
                     exception: exception,
                     progressive_index: i + 1,
@@ -469,7 +534,7 @@ class Firebase {
     }
 
     // Pair is an array with two elements: [curDoc, prevDoc]
-    compare(cur, prev, lowerThreshold, upperThreshold) {
+    async compare(cur, prev, lowerThreshold, upperThreshold) {
         let ret = [];
 
         let curProgressives = [cur.progressive1, cur.progressive2, cur.progressive3, cur.progressive4, cur.progressive5, cur.progressive6, cur.progressive7, cur.progressive8, cur.progressive9, cur.progressive10];
@@ -477,13 +542,14 @@ class Firebase {
         let bases = [cur.base1, cur.base2, cur.base3, cur.base4, cur.base5, cur.base6, cur.base7, cur.base8, cur.base9, cur.base10];
         let increments = [cur.increment1, cur.increment2, cur.increment3, cur.increment4, cur.increment5, cur.increment6, cur.increment7, cur.increment8, cur.increment9, cur.increment10];
 
-        let curVal, prevVal, base, increment, changePercent, changeAbsolute, exception;
+        let curVal, prevVal, base, increment, dollar_change, percent_change, exception;
         for (let i = 0; i < 10; i++) {
-            if (curProgressives[i] === "" || isNaN(curProgressives[i]) || prevProgressives[i] === "" || isNaN(prevProgressives[i])) {
+            if (curProgressives[i] === "" || isNaN(curProgressives[i])) {// || prevProgressives[i] === "" || isNaN(prevProgressives[i])) {
                 continue;
             }
             curVal = +curProgressives[i];
             prevVal = +prevProgressives[i];
+            
             if (bases[i] === undefined) {
                 base = "-";
             } else {
@@ -494,32 +560,44 @@ class Firebase {
             } else {
                 increment = increments[i];
             }
-            if (prevVal === 0) {
-                changePercent = 0;
-                changeAbsolute = 0;
+            if (prevProgressives[i] === "") {
+                let val = await this.getLatestNonZeroVal(prev.machine_id, prev.timestamp, i);
+                if (val === 0) {
+                    dollar_change = this.round(curVal - prevVal);
+                    percent_change = 0;
+                } else if (val === "-") {
+                    //prevVal = "-";
+                    dollar_change = "-";
+                    percent_change = "-";
+                } else {
+                    prevVal = val;
+                    dollar_change = this.round(curVal - val);
+                    percent_change = this.round((curVal - val) / val * 100);
+                }
             } else {
-                changePercent = this.round((curVal - prevVal) / prevVal * 100);
-                changeAbsolute = this.round(curVal - prevVal);
+                dollar_change = this.round(curVal - prevVal);
+                percent_change = this.round((curVal - prevVal) / prevVal * 100);
             }
 
             exception = false;
-            if (changePercent >= 0) {
-                exception = changePercent >= upperThreshold;
+            if (percent_change >= 0) {
+                exception = percent_change >= upperThreshold;
             } else {
-                exception = Math.abs(changePercent) >= lowerThreshold;
+                exception = Math.abs(percent_change) >= lowerThreshold;
             }
 
-            if (!isNaN(curVal) && !isNaN(prevVal)) {
+            if (!isNaN(curVal)) {// && !isNaN(prevVal)) {
                 ret.push({
+                    doc_id: cur.id,
                     location: cur.location,
                     machine_id: cur.machine_id,
-                    //prog_name: 'Major',
+                    notes: cur.notes,
                     base: base,
                     increment: increment,
                     cur_day_val: curVal,
                     prev_day_val: prevVal,
-                    change: changePercent,
-                    changeAbsolute: changeAbsolute,
+                    dollar_change: dollar_change,
+                    percent_change: percent_change,
                     //underflow: underflow,
                     exception: exception,
                     progressive_index: i + 1,
@@ -529,13 +607,78 @@ class Firebase {
         return ret;
     }
 
+    async getLatestNonZeroVal(id, timestamp, index) {
+        let ref = this.db.collection('users').doc(this.auth.currentUser.uid).collection('scans')
+            .where('machine_id', '==', id)
+            .orderBy('timestamp', 'desc')
+            .startAfter(timestamp)
+            .limit(5);
+        return await ref.get().then(function(snapshot) {
+            let vals = [];
+            snapshot.forEach(function(doc) {
+                if (index === 0) {
+                    if (doc.data().progressive1 !== "") {
+                        vals.push(doc.data().progressive1);
+                    }
+                } else if (index === 1) {
+                    if (doc.data().progressive2 !== "") {
+                        vals.push(doc.data().progressive2);
+                    }
+                } else if (index === 2) {
+                    if (doc.data().progressive3 !== "") {
+                        vals.push(doc.data().progressive3);
+                    }
+                } else if (index === 3) {
+                    if (doc.data().progressive4 !== "") {
+                        vals.push(doc.data().progressive4);
+                    }
+                } else if (index === 4) {
+                    if (doc.data().progressive5 !== "") {
+                        vals.push(doc.data().progressive5);
+                    }
+                } else if (index === 5) {
+                    if (doc.data().progressive6 !== "") {
+                        vals.push(doc.data().progressive6);
+                    }
+                } else if (index === 6) {
+                    if (doc.data().progressive7 !== "") {
+                        vals.push(doc.data().progressive7);
+                    }
+                } else if (index === 7) {
+                    if (doc.data().progressive8 !== "") {
+                        vals.push(doc.data().progressive8);
+                    }
+                } else if (index === 8) {
+                    if (doc.data().progressive9 !== "") {
+                        vals.push(doc.data().progressive9);
+                    }
+                } else if (index === 9) {
+                    if (doc.data().progressive10 !== "") {
+                        vals.push(doc.data().progressive10);
+                    }
+                }
+            });
+            return Number(vals[0]);
+        }).catch(function(error) {
+            console.log(error);
+            return "-";
+        });
+    }
+
     round(number) {
         return Math.round((number + Number.EPSILON) * 100) / 100;
     }
 
+    formatNumberString(number) {
+        if (isNaN(number)) {
+            return "-";
+        }
+        return number.toLocaleString();
+    }
+
     async getMonthlyReports() {
         var listRef = this.storageMonthlyReportsBucket.ref().child(this.getCurrentUserUid());
-        var list = await listRef.listAll();//.then(function(res) {
+        var list = await listRef.listAll();
         return list.items;
     }
 }

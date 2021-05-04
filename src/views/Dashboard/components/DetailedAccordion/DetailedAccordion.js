@@ -8,6 +8,7 @@ import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Chip from '@material-ui/core/Chip';
 import TuneIcon from '@material-ui/icons/Tune';
+import TextField from '@material-ui/core/TextField';
 //import InputLabel from '@material-ui/core/InputLabel';
 //import MenuItem from '@material-ui/core/MenuItem';
 //import Tooltip from '@material-ui/core/Tooltip';
@@ -70,6 +71,10 @@ const styles = theme => ({
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(2),
     },
+    columnMargin: {
+        marginTop: theme.spacing(1),
+        marginBottom: theme.spacing(1),
+    }
 });
 
 class DetailedAccordion extends Component {
@@ -78,9 +83,11 @@ class DetailedAccordion extends Component {
         super(props);
         this.handleStartDateChange = this.handleStartDateChange.bind(this);
         this.handleEndDateChange = this.handleEndDateChange.bind(this);
+        this.handleOnMachineIdSearchValueChange = this.handleOnMachineIdSearchValueChange.bind(this);
         this.handleDateRangeSearch = this.handleDateRangeSearch.bind(this);
         this.handleDateClick = this.handleDateClick.bind(this);
-        this.state = { localStartDate: new Date(), localEndDate: new Date() };
+        this.handleMachineIdSearch = this.handleMachineIdSearch.bind(this);
+        this.state = { localStartDate: new Date(), localEndDate: new Date(), machineIdSearchValue: "" };
     }
 
     handleStartDateChange(event) {
@@ -91,12 +98,20 @@ class DetailedAccordion extends Component {
         this.setState({ localEndDate: event });
     }
 
+    handleOnMachineIdSearchValueChange(event) {
+        this.setState({ machineIdSearchValue: event.target.value });
+    }
+
     handleDateRangeSearch() {
         this.props.onDateRangeSearchClick(this.state.localStartDate, this.state.localEndDate);
     }
 
     handleDateClick(code) {
         this.props.onDateClick(code);
+    }
+
+    handleMachineIdSearch(id) {
+        this.props.onMachineIdSearch(id);
     }
 
     render() {
@@ -165,6 +180,15 @@ class DetailedAccordion extends Component {
                                     </ThemeProvider>
                                     <Button onClick={this.handleDateRangeSearch}>Search</Button>
                                 </Typography>
+                            </div>
+                        </Grid>
+                        <Grid item lg={3} sm={6} md={6}>
+                            <div className={classes.column}>
+                                <Typography>Search by Machine ID:</Typography>
+                                <div className={classes.columnMargin}>
+                                    <TextField id="outlined-basic" onChange={this.handleOnMachineIdSearchValueChange} label="Machine ID" variant="outlined" />
+                                </div>
+                                <Button onClick={() => this.handleMachineIdSearch(this.state.machineIdSearchValue)}>Search</Button>
                             </div>
                         </Grid>
                         {/*<div className={classes.column}>

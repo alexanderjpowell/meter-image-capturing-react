@@ -1,7 +1,7 @@
 import 'date-fns';
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import { Container, Grid, Card, CardContent, Typography, Switch } from '@material-ui/core';
+import { Container, Grid, Card, CardContent, Typography, Box, Switch } from '@material-ui/core';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import MaterialTable from 'material-table';
@@ -29,7 +29,10 @@ const styles = (theme) => ({
         height: "100%"
     },
     textArea: {
-        margin: '30px',
+        marginTop: '10px',
+    },
+    textAreaBottom: {
+        marginBottom: '10px',
     }
 });
 
@@ -55,15 +58,21 @@ class DailyReports extends Component {
         let hours = resetTime.getHours();
         let minutes = resetTime.getMinutes();
         let allData = await firebase.getDocsOnDate(year, month, day, hours, minutes);
-        let changeAbsolute = 0;
+        //let changeAbsolute = 0;
         let underflowcount = 0;
         let filteredData = [];
         let prevDaySum = 0;
         let curDaySum = 0;
         allData.forEach(function(item) {
-            changeAbsolute += item.changeAbsolute;
-            prevDaySum += item.prev_day_val;
-            curDaySum += item.cur_day_val;
+            //changeAbsolute += item.dollar_change;
+            let p = Number(item.prev_day_val);
+            let c = Number(item.cur_day_val);
+            if (!isNaN(p)) {
+                prevDaySum += p;
+            }
+            if (!isNaN(c)) {
+                curDaySum += c;
+            }
             if (item.exception) {
                 filteredData.push(item);
                 underflowcount++;
@@ -71,9 +80,9 @@ class DailyReports extends Component {
         });
 
         if (this.state.displayExceptionsOnly) {
-            this.setState({ allData: allData, filteredData: filteredData, presentableData: filteredData, underflowCount: underflowcount, totalChange: changeAbsolute, totalScans: allData.length, prevDaySum: prevDaySum, curDaySum: curDaySum, queryDate: dateObject, loading: false });
+            this.setState({ allData: allData, filteredData: filteredData, presentableData: filteredData, underflowCount: underflowcount, totalChange: curDaySum - prevDaySum, totalScans: allData.length, prevDaySum: prevDaySum, curDaySum: curDaySum, queryDate: dateObject, loading: false });
         } else {
-            this.setState({ allData: allData, filteredData: filteredData, presentableData: allData, underflowCount: underflowcount, totalChange: changeAbsolute, totalScans: allData.length, prevDaySum: prevDaySum, curDaySum: curDaySum, queryDate: dateObject, loading: false });
+            this.setState({ allData: allData, filteredData: filteredData, presentableData: allData, underflowCount: underflowcount, totalChange: curDaySum - prevDaySum, totalScans: allData.length, prevDaySum: prevDaySum, curDaySum: curDaySum, queryDate: dateObject, loading: false });
         }
     }
 
@@ -151,13 +160,18 @@ class DailyReports extends Component {
                                         />
                                     </MuiPickersUtilsProvider>
                                 </Grid>
+                                <Grid container>
+                                
+                                <Switch checked={this.state.displayExceptionsOnly} onChange={this.filterAllorExceptionScans} label="Chip 1" color="secondary" style={{marginRight: 5}}/>
+                                <Typography>Only display results over and under the metrics provided in settings</Typography>
+                                </Grid>
                             </CardContent>
                         </Card>
                     </Grid>
                     <Grid
                         item
-                        xl={2}
-                        lg={2}
+                        xl={3}
+                        lg={3}
                         sm={12}
                         xs={12}
                     >
@@ -179,36 +193,40 @@ class DailyReports extends Component {
                         <Card style={{ height: '100%' }}>
                             <CardContent>
                                 <Typography color="textSecondary" gutterBottom variant="h6">PROGRESSIVE LIABILITY</Typography>
-                                
-                                <Typography color="textPrimary" variant="h3">{this.state.loading ? '-' : '$' + this.state.prevDaySum}</Typography>
-                                <Typography color="textSecondary" variant="caption">Total Progressive Liability for {this.convertDateToString(this.calculatePreviousDate(this.state.queryDate))}</Typography>
-                                <hr/>         
-                                <Typography color="textPrimary" variant="h3">{this.state.loading ? '-' : '$' + this.state.curDaySum}</Typography>
-                                <Typography color="textSecondary" variant="caption">Total Progressive Liability for {this.convertDateToString(this.state.queryDate)}</Typography>
-                                
+                                <Typography color="textPrimary" variant="h3">{this.state.loading ? '-' : '$' + firebase.formatNumberString(firebase.round(this.state.prevDaySum))}</Typography>
+                                <Typography color="textSecondary" variant="caption">
+                                    <Box>Total Progressive Liability for</Box>
+                                    <Box fontWeight="fontWeightBold">{this.convertDateToString(this.calculatePreviousDate(this.state.queryDate))}</Box>
+                                </Typography>
+                                <hr className={classes.textArea}/>
+                                <Typography className={classes.textArea} color="textPrimary" variant="h3">{this.state.loading ? '-' : '$' + firebase.formatNumberString(firebase.round(this.state.curDaySum))}</Typography>
+                                <Typography color="textSecondary" variant="caption">
+                                    <Box>Total Progressive Liability for</Box>
+                                    <Box fontWeight="fontWeightBold">{this.convertDateToString(this.state.queryDate)}</Box>
+                                </Typography>
                             </CardContent>
                         </Card>
                     </Grid>
                     <Grid
                         item
-                        xl={2}
-                        lg={2}
+                        xl={3}
+                        lg={3}
                         sm={12}
                         xs={12}
                     >
                         <Card style={{ height: '100%' }}>
                             <CardContent>
-                                <Typography color="textSecondary" gutterBottom variant="h6">DAILY CHANGE IN PROGRESSIVE LIABILITY</Typography>
-                                <Typography color="textPrimary" variant="h3">{this.state.loading ? '-' : '$' + firebase.round(this.state.totalChange)}</Typography>
+                                <Typography color="textSecondary" gutterBottom variant="h6">DAILY CHANGE IN SCANNED PROGRESSIVE LIABILITY</Typography>
+                                <Typography color="textPrimary" variant="h3">{this.state.loading ? '-' : '$' + firebase.formatNumberString(firebase.round(this.state.totalChange))}</Typography>
                                 <Typography color="textSecondary" variant="caption">{this.state.loading ? '' : 'Compared to the previous day'}</Typography>
-                                <hr/>
-                                <Typography color="textPrimary" variant="h3">{this.state.loading ? '-' : this.state.totalScans}</Typography>
-                                <Typography color="textSecondary" variant="caption">Progressives read</Typography>
+                                <hr className={classes.textArea}/>
+                                <Typography className={classes.textArea} color="textPrimary" variant="h3">{this.state.loading ? '-' : this.state.totalScans}</Typography>
+                                <Typography color="textSecondary" variant="caption">Total scans</Typography>
                             </CardContent>
                         </Card>
                     </Grid>
 
-                    <Grid
+                    {/*<Grid
                         item
                         xl={2}
                         lg={2}
@@ -222,7 +240,7 @@ class DailyReports extends Component {
                                 <Typography>Only display results over and under the metrics provided in settings</Typography>
                             </CardContent>
                         </Card>
-                    </Grid>
+                    </Grid>*/}
                     
                     <Grid
                         item
@@ -235,42 +253,72 @@ class DailyReports extends Component {
                             <MaterialTable
                                 title="Daily Change"
                                 columns={[
-                                    { title: 'Location', field: 'location' },
-                                    { title: 'Machine ID', field: 'machine_id' },
-                                    { field: 'progressive_index', render: rowData => {
+                                    { title: 'Location', field: 'location', editable: 'never' },
+                                    { title: 'Machine ID', field: 'machine_id', editable: 'never' },
+                                    { title: 'Progressive Index', field: 'progressive_index', editable: 'never', render: rowData => {
                                             return <Chip variant="outlined" label={'Progressive ' + rowData.progressive_index}/>
                                         }
                                     },
-                                    //{ title: 'Description', field: 'prog_name' },
-                                    { title: 'Base', field: 'base' },
-                                    { title: 'Increment %', field: 'increment', type: 'numeric' },
-                                    { title: this.convertDateToString(this.calculatePreviousDate(this.state.queryDate)), field: 'prev_day_val' },
-                                    { title: this.convertDateToString(this.state.queryDate), field: 'cur_day_val' },
-                                    { title: 'Change', field: 'change', type: 'numeric', render: rowData => {
-                                            if (rowData.change >= 0) {
-                                                return <Chip icon={<ArrowUpwardIcon/>} variant="outlined" color="secondary" label={rowData.change + '%'} />;
+                                    { title: 'Notes', field: 'notes', editable: 'never', render: rowData => {
+                                            if (rowData.notes === null) {
+                                                return "-";
+                                            } else if (rowData.notes.length >= 25) {
+                                                return rowData.notes.substring(0, 20) + '...';
                                             } else {
-                                                return <Chip icon={<ArrowDownwardIcon/>} variant="outlined" color="primary" label={rowData.change + '%'} />;
+                                                return rowData.notes;
+                                            }
+                                        }
+                                    },
+                                    { title: 'Base', field: 'base', editable: 'never' },
+                                    { title: 'Increment %', field: 'increment', type: 'numeric', editable: 'never' },
+                                    { title: this.convertDateToString(this.calculatePreviousDate(this.state.queryDate)), field: 'prev_day_val', type: 'numeric', editable: 'never' },
+                                    { title: this.convertDateToString(this.state.queryDate), field: 'cur_day_val', type: 'numeric', editable: 'onUpdate' },
+                                    { title: 'Change ($)', field: 'dollar_change', type: 'numeric', editable: 'never', defaultSort: 'asc', render: rowData => {
+                                            if (rowData.dollar_change >= 0) {
+                                                return <Chip icon={<ArrowUpwardIcon/>} variant="outlined" color="secondary" label={'$' + rowData.dollar_change} />;
+                                            } else {
+                                                return <Chip icon={<ArrowDownwardIcon/>} variant="outlined" color="primary" label={'$' + rowData.dollar_change} />;
+                                            }
+                                        }
+                                    },
+                                    { title: 'Change (%)', field: 'percent_change', type: 'numeric', editable: 'never', render: rowData => {
+                                            if (rowData.percent_change >= 0) {
+                                                return <Chip icon={<ArrowUpwardIcon/>} color="secondary" label={rowData.percent_change + '%'} />;
+                                            } else {
+                                                return <Chip icon={<ArrowDownwardIcon/>} color="primary" label={rowData.percent_change + '%'} />;
                                             }
                                         }
                                     }
                                 ]}
                                 data={this.state.presentableData}
-                                /*data={[
-                                    { location: 'EC0701-0704', machine_id: '1234', prog_name: 'Major', base: 10000 , increment: 0.5, prev_day_val: 12942.00, cur_day_val: 13004.00 , change: 62, hidden: true },
-                                    { location: 'EC0701-0704', machine_id: '1234', prog_name: 'Minor', base: 800 , increment: 0.1, prev_day_val: 1095.00, cur_day_val: 883.00 , change: -212 },
-                                    { location: 'EC1003', machine_id: '1235', prog_name: 'Grand', base: 8800 , increment: 0.75, prev_day_val: 8817.00, cur_day_val: 8818.00 , change: 1 },
-                                    { location: 'EC1003', machine_id: '1235', prog_name: 'Mini', base: 880 , increment: 0.25, prev_day_val: 1061.00, cur_day_val: 1068.00 , change: 7 },
-                                ]}*/
                                 options={{
+                                    actionsColumnIndex: -1,
                                     exportAllData: true,
                                     exportButton: true,
                                     pageSize: 10,
+                                    pageSizeOptions: [],
                                     search: false,
+                                    sorting: true,
                                     rowStyle: {
                                         fontSize: 14,
                                         fontFamily: 'Roboto',
                                     },
+                                }}
+                                editable={{
+                                    onRowUpdate: (newData, oldData) =>
+                                        new Promise((resolve) => {
+                                            firebase.updateScanFromDailyChange(oldData, newData);
+                                            console.log(newData);
+                                            setTimeout(() => {
+                                                resolve();
+                                                if (oldData) {
+                                                    const dataUpdate = [...this.state.presentableData];
+                                                    const index = oldData.tableData.id;
+                                                    dataUpdate[index] = newData;
+                                                    this.setState({ presentableData: dataUpdate });
+                                                }
+                                            }, 600);
+                                        }),
                                 }}
                             />
                         </Card>

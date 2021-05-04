@@ -79,18 +79,8 @@ function SignIn(props) {
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
-        <Grid container
-              direction="row"
-              justify="center"
-              alignItems="center"
-              spacing={3}>
-          <Grid item xs={smallBreakpoint} sm={smallBreakpoint} md={smallBreakpoint} lg={largeBreakpoint} xl={largeBreakpoint}>
+        <Grid item xs={smallBreakpoint} sm={smallBreakpoint} md={smallBreakpoint} lg={largeBreakpoint} xl={largeBreakpoint}>
             <div align="center"><img src='/images/logos/logo-transparent1.png' width="100" height="100" alt="MiC Logo"/></div>
-          </Grid>
-          <Grid item xs={smallBreakpoint} sm={smallBreakpoint} md={smallBreakpoint} lg={largeBreakpoint} xl={largeBreakpoint}>
-            <div align="center"><img src='/images/logos/pds_logo.png' height="80" alt="PDS Logo"/></div>
-          </Grid>
-          <Grid item xs={12} sm={12} md={12} lg={12} xl={12}></Grid>
         </Grid>
         <Typography component="h1" variant="h5">
           Meter Image Capturing
