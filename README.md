@@ -10,6 +10,8 @@
 
 - Views are on: `localhost:3000`
 
+Notes: there is a bug with material-table.  We had to downgrade to version 1.67.0.  Higher versions caused a memory leak when loading new table data.  We should look at other table libraries.
+
 # Deployment Instructions
 
 - To deploy to a preview channel:

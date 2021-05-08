@@ -157,52 +157,6 @@ class Firebase {
 
     // For now we only allow updates of progressive values 1 through 10
     updateScan(oldData, newData) {
-        let updates = {};
-
-        let progressive;
-        let index = oldData['progressive_index'];
-
-        if (index === 1) {
-            progressive = 'progressive1';
-        } else if (index === 2) {
-            progressive = 'progressive2';
-        } else if (index === 3) {
-            progressive = 'progressive3';
-        } else if (index === 4) {
-            progressive = 'progressive4';
-        } else if (index === 5) {
-            progressive = 'progressive5';
-        } else if (index === 6) {
-            progressive = 'progressive6';
-        } else if (index === 7) {
-            progressive = 'progressive7';
-        } else if (index === 8) {
-            progressive = 'progressive8';
-        } else if (index === 9) {
-            progressive = 'progressive9';
-        } else if (index === 10) {
-            progressive = 'progressive10';
-        } else if (oldData[progressive] === newData[progressive]) { // No change detected
-            return;
-        }
-
-        updates[progressive] = newData.progressive;
-
-        this.db.collection('users')
-            .doc(this.auth.currentUser.uid)
-            .collection('scans')
-            .doc(oldData.docId)
-            .update(updates)
-            .then(function() {
-                console.log("Document successfully updated!");
-            })
-            .catch(function(error) {
-                console.error("Error updating document: ", error);
-            });
-
-    }
-
-    updateScanFromDailyChange(oldData, newData) {
         if (oldData === newData) return;
         let updates = {};
 
@@ -233,12 +187,22 @@ class Firebase {
             return;
         }
 
-        updates[progressive] = String(newData.cur_day_val);
+        if (newData.progressive === null || newData.progressive === "") {
+            updates[progressive] = "";
+        } else {
+            updates[progressive] = String(newData.progressive);
+        }
+        
+        if (newData.notes === null || newData.notes === "") {
+            updates["notes"] = "";
+        } else {
+            updates["notes"] = String(newData.notes);
+        }
 
         this.db.collection('users')
             .doc(this.auth.currentUser.uid)
             .collection('scans')
-            .doc(newData.doc_id)
+            .doc(oldData.docId)
             .update(updates)
             .then(function() {
                 console.log("Document successfully updated!");
@@ -246,7 +210,55 @@ class Firebase {
             .catch(function(error) {
                 console.error("Error updating document: ", error);
             });
+
     }
+
+    // updateScanFromDailyChange(oldData, newData) {
+    //     if (oldData === newData) return;
+    //     let updates = {};
+
+    //     let progressive;
+    //     let index = oldData['progressive_index'];
+
+    //     if (index === 1) {
+    //         progressive = 'progressive1';
+    //     } else if (index === 2) {
+    //         progressive = 'progressive2';
+    //     } else if (index === 3) {
+    //         progressive = 'progressive3';
+    //     } else if (index === 4) {
+    //         progressive = 'progressive4';
+    //     } else if (index === 5) {
+    //         progressive = 'progressive5';
+    //     } else if (index === 6) {
+    //         progressive = 'progressive6';
+    //     } else if (index === 7) {
+    //         progressive = 'progressive7';
+    //     } else if (index === 8) {
+    //         progressive = 'progressive8';
+    //     } else if (index === 9) {
+    //         progressive = 'progressive9';
+    //     } else if (index === 10) {
+    //         progressive = 'progressive10';
+    //     } else if (oldData[progressive] === newData[progressive]) { // No change detected
+    //         return;
+    //     }
+
+    //     updates[progressive] = String(newData.cur_day_val);
+    //     updates["notes"] = String(newData.notes);
+
+    //     this.db.collection('users')
+    //         .doc(this.auth.currentUser.uid)
+    //         .collection('scans')
+    //         .doc(newData.doc_id)
+    //         .update(updates)
+    //         .then(function() {
+    //             console.log("Document successfully updated!");
+    //         })
+    //         .catch(function(error) {
+    //             console.error("Error updating document: ", error);
+    //         });
+    // }
 
     deleteScan(docId) {
         this.db.collection('users').doc(this.auth.currentUser.uid).collection('scans').doc(docId).delete();

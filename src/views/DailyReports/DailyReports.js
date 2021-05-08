@@ -259,7 +259,7 @@ class DailyReports extends Component {
                                             return <Chip variant="outlined" label={'Progressive ' + rowData.progressive_index}/>
                                         }
                                     },
-                                    { title: 'Notes', field: 'notes', editable: 'never', render: rowData => {
+                                    { title: 'Notes', field: 'notes', editable: 'onUpdate', render: rowData => {
                                             if (rowData.notes === null) {
                                                 return "-";
                                             } else if (rowData.notes.length >= 25) {
@@ -307,8 +307,7 @@ class DailyReports extends Component {
                                 editable={{
                                     onRowUpdate: (newData, oldData) =>
                                         new Promise((resolve) => {
-                                            firebase.updateScanFromDailyChange(oldData, newData);
-                                            console.log(newData);
+                                            firebase.updateScan(oldData, newData);
                                             setTimeout(() => {
                                                 resolve();
                                                 if (oldData) {

@@ -26,18 +26,13 @@ class MaterialTableDemo extends Component {
                 } else {
                     return <Chip variant="outlined" color="secondary" label={'Progressive ' + rowData.progressive_index}/>;
                 }
-                // if (rowData.progressive_index === "-") {
-                //     return <Chip variant="outlined" label={'Daily Reading Unavailable'}/>;
-                // } else {
-                //     return <Chip variant="outlined" color="secondary" label={'Progressive ' + rowData.progressive_index}/>;
-                // }
             } 
         },
-        { title: 'Progressive', field: 'progressive', width: 80 },
+        { title: 'Progressive', field: 'progressive', editable: 'onUpdate', type: 'numeric', width: 80 },
         { title: 'Base', field: 'base', editable: 'never', width: 80 },
         { title: 'Timestamp', field: 'timestamp', editable: 'never', width: 150 },
         { title: 'User', field: 'userName', editable: 'never', width: 80 },
-        { title: 'Notes', field: 'notes', editable: 'never' },
+        { title: 'Notes', field: 'notes', editable: 'onUpdate' },
         { title: 'Location', field: 'location', editable: 'never', width: 100 },
       ],
       data: [],
@@ -328,7 +323,6 @@ class MaterialTableDemo extends Component {
           }),*/
         onRowUpdate: (newData, oldData) =>
           new Promise((resolve) => {
-            //console.log(oldData);
             firebase.updateScan(oldData, newData);
             setTimeout(() => {
               resolve();
